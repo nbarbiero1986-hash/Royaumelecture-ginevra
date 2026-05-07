@@ -1,0 +1,3359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ginevra Lit">
+<meta name="theme-color" content="#1a1430">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1430'/%3E%3Ctext x='90' y='130' font-size='110' text-anchor='middle'%3E📖%3C/text%3E%3C/svg%3E">
+<title>Ginevra Apprend à Lire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Caveat:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parch-1: #f0deb0;
+    --parch-2: #e8d094;
+    --parch-edge: #8b6f3e;
+    --ink: #3d2817;
+    --ink-soft: #5a3d28;
+    --gold: #d4a045;
+    --gold-light: #f0c970;
+    --gold-deep: #8b6f1f;
+    --rose: #c87a8a;
+    --rose-deep: #8b3d4f;
+    --rose-dark: #5d2536;
+    --swamp: #4a6b3a;
+    --swamp-deep: #2d4523;
+    --night-1: #1a1430;
+    --night-2: #2d1f4d;
+    --night-3: #0d0a1f;
+    --dragon: #a83d3d;
+
+    /* Biome colors */
+    --forest-1: #2d4a2d;
+    --forest-2: #4a6b3a;
+    --village-1: #c89968;
+    --village-2: #a87848;
+    --mountain-1: #6a7a8a;
+    --mountain-2: #4a5a6a;
+    --swamp-c1: #5a6b3a;
+    --swamp-c2: #3a4a2a;
+    --sky-1: #87ceeb;
+    --sky-2: #b8dcf0;
+    --castle-1: #6b5b8a;
+    --castle-2: #4a3d6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; touch-action: manipulation; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--night-3);
+    color: var(--ink);
+    overflow-x: hidden;
+    min-height: 100vh;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  /* ===== ANIMATED MAGIC SKY (background) ===== */
+  .sky-bg {
+    position: fixed; inset: 0; z-index: -3;
+    background:
+      radial-gradient(ellipse at 20% 10%, #4a3580 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 30%, #6b4ea0 0%, transparent 50%),
+      linear-gradient(180deg, var(--night-2) 0%, var(--night-1) 50%, var(--night-3) 100%);
+  }
+  .stars-bg { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+  .star-dot {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+  .moon {
+    position: fixed; top: 3%; right: 5%;
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe0 0%, #f0d878 50%, #c89938 100%);
+    box-shadow: 0 0 40px rgba(240,216,120,0.5), 0 0 80px rgba(240,216,120,0.3), inset -8px -8px 16px rgba(140,100,30,0.4);
+    z-index: -1;
+    animation: moonFloat 8s ease-in-out infinite;
+  }
+  @keyframes moonFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+  /* Floating fireflies */
+  .firefly {
+    position: fixed;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff5a8 0%, #f5c97a 50%, transparent 100%);
+    box-shadow: 0 0 8px #fff5a8, 0 0 16px rgba(255,245,168,0.5);
+    z-index: -1;
+    pointer-events: none;
+    animation: fireflyDrift 15s linear infinite, fireflyGlow 2s ease-in-out infinite;
+  }
+  @keyframes fireflyDrift {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(60px, -40px); }
+    50% { transform: translate(-30px, -80px); }
+    75% { transform: translate(40px, -120px); }
+    100% { transform: translate(0, -200px); opacity: 0; }
+  }
+  @keyframes fireflyGlow {
+    0%,100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ============ INTRO SCROLL ============ */
+  .intro-screen {
+    position: fixed; inset: 0;
+    z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.5rem;
+    transition: opacity 0.8s, visibility 0.8s;
+  }
+  .intro-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .scroll {
+    background: linear-gradient(135deg, var(--parch-1) 0%, var(--parch-2) 50%, var(--parch-1) 100%);
+    border-radius: 16px;
+    padding: 2.2rem 1.6rem;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow:
+      0 0 0 6px var(--parch-edge),
+      0 0 0 8px var(--gold-deep),
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(139,111,62,0.18);
+    position: relative;
+    animation: unroll 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .scroll::before, .scroll::after {
+    content: '';
+    position: absolute;
+    left: -1.5rem; right: -1.5rem;
+    height: 22px;
+    background: linear-gradient(180deg, var(--gold-deep), var(--parch-edge));
+    border-radius: 50%;
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .scroll::before { top: -11px; }
+  .scroll::after { bottom: -11px; }
+  @keyframes unroll {
+    0% { transform: scaleY(0.05); opacity: 0; }
+    50% { transform: scaleY(1.05) scaleX(0.95); opacity: 0.8; }
+    100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+  }
+
+  .scroll h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 5vw, 2.1rem);
+    color: var(--rose-dark);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 0 var(--gold-light);
+  }
+  .scroll .ornament {
+    color: var(--gold-deep);
+    letter-spacing: 0.5rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.1rem;
+  }
+  .scroll p {
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    line-height: 1.55;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .scroll .name-input {
+    font-family: 'Caveat', cursive;
+    font-size: 1.7rem;
+    color: var(--rose-dark);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--gold-deep);
+    text-align: center;
+    padding: 0.2rem 1rem;
+    margin: 0.6rem 0 0.8rem;
+    width: 80%;
+    max-width: 280px;
+    outline: none;
+  }
+
+  .royal-btn {
+    background: linear-gradient(180deg, var(--rose) 0%, var(--rose-deep) 100%);
+    color: var(--parch-1);
+    padding: 0.85rem 2rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 var(--rose-dark), 0 10px 25px rgba(0,0,0,0.4);
+    transition: all 0.15s;
+  }
+  .royal-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 0 var(--rose-dark), 0 15px 30px rgba(0,0,0,0.5); }
+  .royal-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--rose-dark); }
+
+  /* ============ HEADER HUD ============ */
+  header {
+    position: sticky;
+    top: 0; left: 0; right: 0;
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(13, 10, 31, 0.7);
+    border-bottom: 1px solid rgba(212, 160, 69, 0.2);
+  }
+  .crest {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    letter-spacing: 0.04em;
+  }
+  .crest .icon { font-size: 1.3rem; filter: drop-shadow(0 0 8px rgba(212,160,69,0.6)); }
+  .hud-pills { display: flex; gap: 0.3rem; align-items: center; }
+  .hud-pill {
+    background: rgba(240,222,176,0.95);
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--rose-dark);
+    font-size: 0.85rem;
+    box-shadow: 0 3px 0 var(--parch-edge);
+  }
+  .hud-pill .ico { font-size: 0.95rem; }
+
+  /* ============ JOURNEY TITLE ============ */
+  .journey-title {
+    text-align: center;
+    padding: 1.2rem 1rem 0.4rem;
+    color: var(--parch-1);
+  }
+  .journey-title .royal-tag {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: var(--gold-light);
+    display: block;
+    transform: rotate(-2deg);
+    margin-bottom: 0.1rem;
+  }
+  .journey-title h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.7), 0 0 30px rgba(212,160,69,0.3);
+  }
+  .journey-title h1 .gold { color: var(--gold-light); font-style: italic; }
+  .journey-title .stage-name {
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    color: var(--gold-light);
+    margin-top: 0.3rem;
+  }
+
+  /* ============ THE PATH (vertical journey) ============ */
+  .journey-path {
+    position: relative;
+    max-width: 700px;
+    margin: 1rem auto 4rem;
+    padding: 1rem 0 8rem;
+  }
+
+  /* Biome backgrounds — cover specific Y ranges */
+  .biome {
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    border-radius: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+  .biome::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0.1 0' /%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' /%3E%3C/svg%3E");
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+  }
+  .biome-forest { background: radial-gradient(ellipse at center, var(--forest-2) 0%, var(--forest-1) 70%, transparent 100%); }
+  .biome-village { background: radial-gradient(ellipse at center, var(--village-1) 0%, var(--village-2) 70%, transparent 100%); }
+  .biome-mountain { background: radial-gradient(ellipse at center, var(--mountain-1) 0%, var(--mountain-2) 70%, transparent 100%); }
+  .biome-swamp { background: radial-gradient(ellipse at center, var(--swamp-c1) 0%, var(--swamp-c2) 70%, transparent 100%); }
+  .biome-sky { background: radial-gradient(ellipse at center, var(--sky-1) 0%, var(--sky-2) 70%, transparent 100%); opacity: 0.4; }
+  .biome-castle { background: radial-gradient(ellipse at center, var(--castle-1) 0%, var(--castle-2) 70%, transparent 100%); }
+
+  /* Biome decorations */
+  .biome-deco {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 2.2rem;
+    opacity: 0.7;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  /* Path line behind everything */
+  .path-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .path-line {
+    fill: none;
+    stroke: rgba(212, 160, 69, 0.4);
+    stroke-width: 6;
+    stroke-dasharray: 12 8;
+    stroke-linecap: round;
+    animation: pathDance 30s linear infinite;
+  }
+  .path-line.completed { stroke: rgba(212, 160, 69, 0.85); stroke-dasharray: none; filter: drop-shadow(0 0 8px rgba(212,160,69,0.6)); }
+  @keyframes pathDance { to { stroke-dashoffset: -200; } }
+
+  /* Stages */
+  .stage {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .stage:hover:not(.locked) { transform: translate(-50%, -50%) scale(1.12); }
+  .stage:active:not(.locked) { transform: translate(-50%, -50%) scale(0.95); }
+
+  .stage-circle {
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--parch-1), var(--parch-2));
+    border: 4px solid var(--gold-deep);
+    box-shadow:
+      0 0 0 3px var(--parch-1),
+      0 8px 20px rgba(0,0,0,0.5),
+      inset 0 -4px 8px rgba(139, 111, 62, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .stage:not(.locked):not(.completed) .stage-circle {
+    animation: stagePulse 2.5s ease-in-out infinite;
+  }
+  @keyframes stagePulse {
+    0%, 100% { box-shadow: 0 0 0 3px var(--parch-1), 0 8px 20px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(139,111,62,0.3), 0 0 30px rgba(212,160,69,0.6); }
+    50% { box-shadow: 0 0 0 3px var(--parch-1), 0 8px 20px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(139,111,62,0.3), 0 0 60px rgba(212,160,69,0.95); }
+  }
+  .stage.completed .stage-circle {
+    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold));
+    border-color: var(--gold-deep);
+  }
+  .stage.completed::after {
+    content: '✓';
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 26px; height: 26px;
+    background: var(--swamp);
+    color: var(--parch-1);
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--parch-1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    z-index: 6;
+  }
+  .stage.locked { cursor: not-allowed; }
+  .stage.locked .stage-circle {
+    background: radial-gradient(circle at 35% 35%, #4a4055, #2a2535);
+    border-color: #555;
+    color: rgba(255,255,255,0.4);
+    opacity: 0.7;
+  }
+  .stage.locked .stage-circle::after {
+    content: '🔒';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    font-size: 1.6rem;
+  }
+
+  .stage-label {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: var(--ink);
+    background: var(--parch-1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--parch-edge);
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -22px;
+  }
+  .stage.locked .stage-label { background: rgba(60,55,75,0.9); color: rgba(255,255,255,0.5); border-color: #555; }
+
+  /* GIFT box */
+  .gift {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .gift:hover:not(.locked) { transform: translate(-50%, -50%) scale(1.15) rotate(-5deg); }
+  .gift-circle {
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    border-radius: 14px;
+    border: 3px solid var(--rose-dark);
+    box-shadow:
+      0 0 0 3px var(--gold-light),
+      0 8px 20px rgba(0,0,0,0.5),
+      0 0 25px rgba(212,160,69,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    animation: giftWobble 2s ease-in-out infinite;
+    position: relative;
+  }
+  @keyframes giftWobble {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+  .gift.locked .gift-circle {
+    background: linear-gradient(135deg, #555, #333);
+    border-color: #222;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    animation: none;
+    opacity: 0.5;
+  }
+  .gift.opened .gift-circle {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    border-color: var(--gold-deep);
+    animation: none;
+    opacity: 0.7;
+  }
+  .gift::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 50%;
+    transform: translateX(-50%);
+    width: 8px; height: 14px;
+    background: var(--gold-light);
+    border-radius: 4px 4px 0 0;
+    z-index: 1;
+  }
+
+  /* Princess marker on the path */
+  .princess-marker {
+    position: absolute;
+    transform: translate(-50%, -110%);
+    z-index: 10;
+    pointer-events: none;
+    transition: all 1s cubic-bezier(0.65, 0, 0.35, 1);
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+  }
+  .princess-marker .body {
+    font-size: 2.2rem;
+    animation: princessBob 2s ease-in-out infinite;
+    display: block;
+  }
+  @keyframes princessBob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-6px) rotate(3deg); }
+  }
+
+  /* Fairy mascot */
+  .fairy {
+    position: fixed;
+    bottom: 4rem;
+    left: 0.8rem;
+    z-index: 60;
+    cursor: pointer;
+  }
+  .fairy-icon {
+    font-size: 2.5rem;
+    animation: fairyFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
+  }
+  @keyframes fairyFloat {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-8px) rotate(5deg); }
+  }
+  .fairy-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    background: var(--parch-1);
+    padding: 0.5rem 0.8rem;
+    border-radius: 14px;
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    color: var(--ink);
+    border: 2px solid var(--gold);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    white-space: nowrap;
+    max-width: 200px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .fairy-bubble.show { opacity: 1; }
+
+  /* ============ MODAL ============ */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(13, 10, 31, 0.94);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 1000;
+    padding: 0.6rem;
+    animation: fade 0.3s;
+  }
+  .modal-bg.active { display: flex; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: linear-gradient(135deg, var(--parch-1) 0%, var(--parch-2) 50%, var(--parch-1) 100%);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 1.5rem 1rem 1.3rem;
+    position: relative;
+    box-shadow:
+      0 0 0 5px var(--parch-edge),
+      0 0 0 7px var(--gold-deep),
+      0 30px 80px rgba(0,0,0,0.6);
+    animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop { from { transform: scale(0.85) translateY(40px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+  .modal-close {
+    position: absolute;
+    top: 0.5rem; right: 0.5rem;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--rose-deep);
+    color: var(--parch-1);
+    font-size: 1rem;
+    font-weight: 700;
+    transition: transform 0.3s;
+    z-index: 5;
+    box-shadow: 0 3px 0 var(--rose-dark);
+  }
+  .modal-close:hover { transform: rotate(90deg) scale(1.1); }
+
+  /* CHARACTER intro */
+  .char-intro {
+    text-align: center;
+    padding: 0.3rem 0.4rem 0.6rem;
+  }
+  .char-portrait {
+    width: 100px; height: 100px;
+    margin: 0.2rem auto 0.6rem;
+    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold));
+    border-radius: 50%;
+    border: 4px solid var(--gold-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    box-shadow:
+      0 0 0 3px var(--parch-1),
+      0 0 30px rgba(212,160,69,0.5),
+      0 8px 20px rgba(0,0,0,0.3);
+    animation: charBob 3s ease-in-out infinite;
+  }
+  @keyframes charBob {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
+  }
+  .char-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--rose-dark);
+    margin-bottom: 0.05rem;
+    letter-spacing: 0.04em;
+  }
+  .char-title-sub {
+    font-family: 'Caveat', cursive;
+    font-size: 1.15rem;
+    color: var(--swamp-deep);
+    margin-bottom: 0.7rem;
+  }
+  .char-speech {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.98rem;
+    color: var(--ink);
+    line-height: 1.5;
+    background: rgba(255,251,224,0.7);
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 2px solid var(--parch-edge);
+    margin: 0 auto 0.9rem;
+    max-width: 460px;
+    position: relative;
+  }
+  .char-speech::before {
+    content: '';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 12px solid var(--parch-edge);
+  }
+  .char-speech::after {
+    content: '';
+    position: absolute;
+    top: -7px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid rgba(255,251,224,0.7);
+  }
+
+  /* GIFT MODAL */
+  .gift-modal { text-align: center; padding: 0.5rem 0.4rem 0.6rem; }
+  .gift-box-wrap {
+    perspective: 600px;
+    width: 180px;
+    height: 180px;
+    margin: 0.5rem auto 1rem;
+    position: relative;
+  }
+  .gift-box {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+  }
+  .gift-box.opened { animation: giftOpen 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  @keyframes giftOpen {
+    0% { transform: scale(1) rotate(0); }
+    30% { transform: scale(1.2) rotate(-10deg); }
+    60% { transform: scale(0.5) rotate(180deg); opacity: 0.5; }
+    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+  }
+  .gift-body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--rose) 0%, var(--rose-deep) 100%);
+    border: 5px solid var(--rose-dark);
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(255,255,255,0.3), 0 12px 30px rgba(0,0,0,0.6);
+    position: relative;
+    animation: giftWobble2 2s ease-in-out infinite;
+  }
+  @keyframes giftWobble2 {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+  .gift-body::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 18px;
+    background: var(--gold-light);
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(212,160,69,0.5);
+  }
+  .gift-body::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    width: 18px;
+    background: var(--gold-light);
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(212,160,69,0.5);
+  }
+  .gift-bow {
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(212,160,69,0.7));
+    animation: bowDance 1.5s ease-in-out infinite;
+  }
+  @keyframes bowDance {
+    0%, 100% { transform: translateX(-50%) rotate(-8deg); }
+    50% { transform: translateX(-50%) rotate(8deg); }
+  }
+
+  .gift-reveal {
+    display: none;
+    text-align: center;
+    animation: revealZoom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .gift-reveal.show { display: block; }
+  @keyframes revealZoom {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .reward-emoji-big {
+    font-size: 6rem;
+    display: block;
+    margin: 0.5rem auto;
+    animation: rewardSpin 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(255,255,255,0.7));
+  }
+  @keyframes rewardSpin {
+    0%, 100% { transform: rotate(-10deg) scale(1); }
+    50% { transform: rotate(10deg) scale(1.1); }
+  }
+  .reward-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--rose-dark);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+  }
+  .reward-desc {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: var(--swamp-deep);
+    margin-bottom: 1rem;
+  }
+
+  /* ============ GAME UI ============ */
+  .game-header {
+    text-align: center;
+    margin-bottom: 0.7rem;
+  }
+  .game-header .small-char {
+    font-size: 1.5rem;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+  }
+  .game-header h3 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--rose-dark);
+    letter-spacing: 0.04em;
+    display: inline;
+  }
+
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    margin: 0.4rem 0 0.8rem;
+  }
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--parch-2);
+    border: 2px solid var(--parch-edge);
+    transition: all 0.3s;
+  }
+  .dot.done { background: var(--gold); border-color: var(--gold-deep); transform: scale(1.05); }
+  .dot.current { background: var(--rose-deep); border-color: var(--rose-dark); transform: scale(1.4); animation: dotGlow 1s ease-in-out infinite; }
+  @keyframes dotGlow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(139,61,79,0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(139,61,79,0); }
+  }
+
+  /* SOUND game */
+  .sound-game { text-align: center; }
+  .sound-prompt {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+  .sound-prompt .target {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    color: var(--rose-dark);
+    display: block;
+    margin: 0.2rem 0;
+    letter-spacing: 0.05em;
+    text-shadow: 3px 3px 0 var(--gold-light), 5px 5px 0 var(--gold-deep);
+  }
+
+  .speak-btn {
+    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold));
+    color: var(--ink);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    margin-bottom: 0.9rem;
+    border: 3px solid var(--gold-deep);
+    box-shadow: 0 5px 0 var(--gold-deep), 0 0 20px rgba(212,160,69,0.4);
+    transition: all 0.15s;
+  }
+  .speak-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--gold-deep); }
+  .speak-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-deep); }
+  .speak-btn.speaking { animation: pulse 0.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.55rem;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .option-card {
+    background: var(--parch-1);
+    border: 3px solid var(--parch-edge);
+    border-radius: 14px;
+    padding: 0.7rem 0.4rem;
+    transition: all 0.2s;
+    text-align: center;
+    box-shadow: 0 4px 0 var(--parch-edge);
+  }
+  .option-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+  .option-card.correct {
+    background: #c5e0b3;
+    border-color: var(--swamp);
+    animation: bounce 0.5s;
+  }
+  .option-card.wrong {
+    background: #f5c6c6;
+    border-color: var(--dragon);
+    animation: shake 0.4s;
+  }
+  @keyframes bounce { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .option-emoji { font-size: 2.8rem; display: block; margin-bottom: 0.15rem; }
+  .option-word {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  .option-word .hl { color: var(--rose-deep); font-weight: 900; }
+
+  /* READ */
+  .read-game { text-align: center; }
+  .read-word {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 2.8rem;
+    color: var(--rose-dark);
+    margin: 0.4rem 0 0.5rem;
+    letter-spacing: 0.04em;
+    text-shadow: 3px 3px 0 var(--gold-light), 5px 5px 0 var(--gold-deep);
+  }
+
+  /* SENT */
+  .sent-game { text-align: center; }
+  .sent-image {
+    font-size: 4rem;
+    margin-bottom: 0.4rem;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  }
+  .sent-slots {
+    background: var(--parch-2);
+    border: 3px dashed var(--parch-edge);
+    border-radius: 12px;
+    padding: 0.6rem;
+    min-height: 60px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+    transition: all 0.3s;
+  }
+  .sent-slot {
+    background: var(--gold-light);
+    border: 2px solid var(--gold-deep);
+    border-radius: 8px;
+    padding: 0.3rem 0.7rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .sent-bank {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem;
+  }
+  .sent-chip {
+    background: var(--parch-1);
+    border: 2px solid var(--swamp);
+    border-radius: 8px;
+    padding: 0.35rem 0.75rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--swamp-deep);
+    transition: all 0.2s;
+    box-shadow: 0 3px 0 var(--swamp-deep);
+  }
+  .sent-chip:hover { transform: translateY(-2px); }
+  .sent-chip.used { opacity: 0.25; pointer-events: none; }
+
+  /* WRITE */
+  .write-game { text-align: center; }
+  .write-emoji {
+    font-size: 4rem;
+    margin: 0.2rem 0 0.3rem;
+    display: block;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+  }
+  .write-hint {
+    font-family: 'Caveat', cursive;
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.4rem;
+  }
+  .write-display {
+    background: var(--parch-1);
+    border: 3px solid var(--parch-edge);
+    border-radius: 12px;
+    padding: 0.7rem;
+    min-height: 60px;
+    margin: 0 auto 0.7rem;
+    max-width: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .write-cell {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: var(--rose-dark);
+    text-shadow: 2px 2px 0 var(--gold-light);
+    width: 1.6em;
+    text-align: center;
+    border-bottom: 3px solid var(--parch-edge);
+    padding-bottom: 0.1em;
+    transition: all 0.2s;
+  }
+  .write-cell.filled {
+    border-bottom-color: var(--gold-deep);
+    animation: cellFill 0.3s;
+  }
+  @keyframes cellFill {
+    0% { transform: scale(1.4); color: var(--gold); }
+    100% { transform: scale(1); color: var(--rose-dark); }
+  }
+  .keyboard {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    max-width: 460px;
+    margin: 0 auto 0.7rem;
+  }
+  .key {
+    background: var(--parch-1);
+    border: 2px solid var(--parch-edge);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+    transition: all 0.12s;
+    box-shadow: 0 3px 0 var(--parch-edge);
+  }
+  .key:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .key:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--parch-edge); }
+  .key.wide {
+    grid-column: span 3;
+    background: var(--rose);
+    color: var(--parch-1);
+    border-color: var(--rose-deep);
+    box-shadow: 0 3px 0 var(--rose-deep);
+  }
+  .key.wide:hover { background: var(--rose-deep); }
+
+  .check-btn {
+    background: linear-gradient(180deg, var(--rose) 0%, var(--rose-deep) 100%);
+    color: var(--parch-1);
+    padding: 0.75rem 1.6rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    border-radius: 999px;
+    box-shadow: 0 4px 0 var(--rose-dark);
+    transition: all 0.15s;
+  }
+  .check-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--rose-dark); }
+  .check-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* END SCREEN */
+  .end-screen {
+    text-align: center;
+    padding: 0.4rem 0.4rem 0.7rem;
+  }
+  .end-screen .reward-icon {
+    width: 80px; height: 80px;
+    margin: 0.2rem auto 0.4rem;
+    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold));
+    border-radius: 50%;
+    border: 5px solid var(--gold-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    box-shadow: 0 0 0 3px var(--parch-1), 0 0 40px rgba(212,160,69,0.7);
+    animation: rewardDance 1s ease-in-out infinite;
+  }
+  @keyframes rewardDance {
+    0%,100% { transform: rotate(-8deg) scale(1); }
+    50% { transform: rotate(8deg) scale(1.08); }
+  }
+  .end-screen h4 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--rose-dark);
+    margin-bottom: 0.3rem;
+  }
+  .end-screen p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.45;
+    margin-bottom: 0.7rem;
+    font-size: 0.92rem;
+  }
+  .end-screen .stars-row-big {
+    font-size: 1.6rem;
+    margin: 0.4rem 0;
+    color: var(--gold);
+    letter-spacing: 0.2rem;
+  }
+
+  /* COLLECTION SHELF */
+  .collection-shelf {
+    margin: 1.5rem 0.8rem;
+    padding: 1rem 0.8rem;
+    background: rgba(240, 222, 176, 0.08);
+    border: 1px solid rgba(212, 160, 69, 0.3);
+    border-radius: 18px;
+  }
+  .collection-shelf h3 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--gold-light);
+    text-align: center;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.7rem;
+  }
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 0.4rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .collection-item {
+    aspect-ratio: 1;
+    background: rgba(240, 222, 176, 0.1);
+    border: 2px dashed rgba(212, 160, 69, 0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    transition: all 0.3s;
+  }
+  .collection-item.unlocked {
+    background: linear-gradient(135deg, var(--parch-1), var(--parch-2));
+    border-style: solid;
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(212, 160, 69, 0.5);
+    animation: itemPulse 3s ease-in-out infinite;
+  }
+  @keyframes itemPulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(212, 160, 69, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(212, 160, 69, 0.8); }
+  }
+
+  /* PARTICLES */
+  .confetti {
+    position: fixed;
+    width: 10px; height: 14px;
+    pointer-events: none;
+    z-index: 2000;
+    animation: confettiFall 3s ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.3rem;
+    animation: sparkleUp 1s ease-out forwards;
+    z-index: 2001;
+  }
+  @keyframes sparkleUp {
+    0% { transform: translateY(0) scale(0); opacity: 1; }
+    100% { transform: translateY(-60px) scale(1.5); opacity: 0; }
+  }
+
+  /* VOICE */
+  .voice-fab {
+    position: fixed;
+    bottom: 0.7rem; right: 0.7rem;
+    z-index: 50;
+    background: rgba(240,222,176,0.95);
+    border: 2px solid var(--swamp);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--swamp-deep);
+    box-shadow: 0 3px 0 var(--swamp-deep);
+    font-family: inherit;
+  }
+  .reset-link {
+    position: fixed;
+    top: 4rem; right: 0.7rem;
+    z-index: 50;
+    background: rgba(13,10,31,0.7);
+    border: 1px solid rgba(212,160,69,0.3);
+    border-radius: 999px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    color: var(--parch-1);
+    opacity: 0.5;
+    font-family: inherit;
+  }
+  .reset-link:hover { opacity: 1; }
+
+  /* FINAL VICTORY */
+  .victory {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, #fff7d6 0%, #f5c97a 40%, #c89938 100%);
+    z-index: 9998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+    animation: victoryFade 2s;
+  }
+  .victory.show { display: flex; }
+  @keyframes victoryFade { from { opacity: 0; } to { opacity: 1; } }
+  .victory .crown-big {
+    font-size: 7rem;
+    animation: crownSpin 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(255,255,255,0.8));
+  }
+  @keyframes crownSpin {
+    0%, 100% { transform: scale(1) rotate(-5deg); }
+    50% { transform: scale(1.15) rotate(5deg); }
+  }
+  .victory h2 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 6vw, 3.5rem);
+    color: var(--rose-dark);
+    margin: 0.8rem 0 0.5rem;
+    text-shadow: 2px 2px 0 white, 4px 4px 0 var(--gold);
+    letter-spacing: 0.04em;
+  }
+  .victory p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    max-width: 540px;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  .victory .princess-name {
+    font-family: 'Caveat', cursive;
+    font-size: 2.2rem;
+    color: var(--rose-deep);
+    margin: 0.3rem 0;
+  }
+
+  /* ============ PEDAGOGICAL MECHANICS ============ */
+
+  /* HELP HINT system - subtle pulse when stuck */
+  .stuck-hint { animation: stuckPulse 1.2s ease-in-out infinite; }
+  @keyframes stuckPulse {
+    0%, 100% { box-shadow: 0 4px 0 var(--parch-edge), 0 0 0 0 rgba(212, 160, 69, 0); }
+    50% { box-shadow: 0 4px 0 var(--parch-edge), 0 0 20px 4px rgba(212, 160, 69, 0.7); }
+  }
+  .help-fairy {
+    position: absolute;
+    top: 0.5rem; left: 0.5rem;
+    background: var(--parch-1);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 0.35rem 0.7rem;
+    font-family: 'Caveat', cursive;
+    font-size: 0.95rem;
+    color: var(--ink);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    animation: helpPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+    max-width: 65%;
+    line-height: 1.2;
+  }
+  @keyframes helpPop {
+    0% { transform: scale(0) rotate(-10deg); }
+    100% { transform: scale(1) rotate(-2deg); }
+  }
+
+  /* === MECHANIC 1: DÉCODAGE (sound by sound) === */
+  .decoder-game { text-align: center; }
+  .decoder-letters {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin: 1rem 0 0.8rem;
+    min-height: 90px;
+    align-items: center;
+  }
+  .decoder-letter {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    color: var(--rose-dark);
+    text-shadow: 2px 2px 0 var(--gold-light), 4px 4px 0 var(--gold-deep);
+    background: var(--parch-1);
+    border: 3px solid var(--parch-edge);
+    border-radius: 14px;
+    width: 72px; height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 0 var(--parch-edge);
+  }
+  .decoder-letter:hover {
+    background: var(--gold-light);
+    transform: translateY(-3px);
+  }
+  .decoder-letter.played {
+    background: var(--gold-light);
+    border-color: var(--gold-deep);
+    animation: letterPlayed 0.5s;
+  }
+  .decoder-letter.silent {
+    color: rgba(61,40,23,0.35);
+    text-shadow: none;
+  }
+  @keyframes letterPlayed {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3) rotate(-5deg); box-shadow: 0 0 30px var(--gold); }
+    100% { transform: scale(1); }
+  }
+  .decoder-merged {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 3.2rem;
+    color: var(--rose-dark);
+    text-shadow: 3px 3px 0 var(--gold-light), 5px 5px 0 var(--gold-deep);
+    margin: 0.5rem 0 0.8rem;
+    animation: mergeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    letter-spacing: 0.05em;
+  }
+  @keyframes mergeIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .decoder-replay {
+    background: var(--swamp);
+    color: var(--parch-1);
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 3px 0 var(--swamp-deep);
+    margin-bottom: 0.5rem;
+  }
+
+  /* === MECHANIC 2: TRACÉ (trace letter with finger) === */
+  .trace-game { text-align: center; }
+  .trace-canvas-wrap {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0.5rem auto 0.8rem;
+    background: var(--parch-1);
+    border: 4px solid var(--parch-edge);
+    border-radius: 18px;
+    box-shadow: 0 6px 0 var(--parch-edge), inset 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .trace-canvas-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(212,160,69,0.15) 27px, rgba(212,160,69,0.15) 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(212,160,69,0.15) 27px, rgba(212,160,69,0.15) 28px);
+    pointer-events: none;
+  }
+  .trace-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .trace-letter-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 14rem;
+    color: rgba(139,61,79,0.18);
+    pointer-events: none;
+    line-height: 1;
+  }
+  .trace-arrows {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .trace-arrow {
+    position: absolute;
+    font-size: 1.6rem;
+    color: var(--swamp);
+    animation: arrowPulse 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  @keyframes arrowPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .trace-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .trace-btn {
+    background: var(--parch-1);
+    border: 2px solid var(--parch-edge);
+    border-radius: 10px;
+    padding: 0.4rem 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--ink);
+    box-shadow: 0 3px 0 var(--parch-edge);
+  }
+  .trace-btn.primary {
+    background: var(--rose);
+    color: var(--parch-1);
+    border-color: var(--rose-deep);
+    box-shadow: 0 3px 0 var(--rose-deep);
+  }
+  .trace-progress-bar {
+    height: 8px;
+    background: var(--parch-2);
+    border-radius: 999px;
+    overflow: hidden;
+    max-width: 280px;
+    margin: 0 auto 0.5rem;
+    border: 1px solid var(--parch-edge);
+  }
+  .trace-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+    width: 0;
+    transition: width 0.2s;
+  }
+
+  /* === MECHANIC 3: MICROPHONE === */
+  .mic-game { text-align: center; }
+  .mic-word-display {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 4rem;
+    color: var(--rose-dark);
+    margin: 0.6rem 0 0.5rem;
+    letter-spacing: 0.08em;
+    text-shadow: 3px 3px 0 var(--gold-light), 5px 5px 0 var(--gold-deep);
+    line-height: 1;
+  }
+  .mic-letter {
+    display: inline-block;
+    transition: all 0.3s;
+  }
+  .mic-letter.read {
+    color: var(--swamp);
+    transform: scale(1.15);
+    text-shadow: 3px 3px 0 #c5e0b3, 5px 5px 0 var(--swamp);
+  }
+  .mic-button {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b);
+    color: white;
+    font-size: 2.5rem;
+    margin: 0.5rem 0 0.3rem;
+    border: 4px solid #8b1f1f;
+    box-shadow: 0 6px 0 #8b1f1f, 0 0 0 8px rgba(192,57,43,0.2);
+    transition: all 0.15s;
+  }
+  .mic-button.listening {
+    animation: micPulse 1s ease-in-out infinite;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #e74c3c);
+  }
+  @keyframes micPulse {
+    0%, 100% { box-shadow: 0 6px 0 #8b1f1f, 0 0 0 8px rgba(192,57,43,0.2); }
+    50% { box-shadow: 0 6px 0 #8b1f1f, 0 0 0 24px rgba(192,57,43,0); }
+  }
+  .mic-button:active { transform: translateY(3px); box-shadow: 0 3px 0 #8b1f1f; }
+  .mic-status {
+    font-family: 'Caveat', cursive;
+    font-size: 1.25rem;
+    color: var(--ink-soft);
+    min-height: 1.5em;
+    margin-top: 0.3rem;
+  }
+  .mic-skip-btn {
+    background: rgba(13,10,31,0.1);
+    border: 1px dashed var(--parch-edge);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-top: 0.5rem;
+    font-family: inherit;
+  }
+
+  /* === MECHANIC 4: LETTRE CACHÉE (missing letter) === */
+  .hidden-game { text-align: center; }
+  .hidden-image {
+    font-size: 4.5rem;
+    margin: 0.3rem 0 0.4rem;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  }
+  .hidden-word {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    margin: 0.5rem 0 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--rose-dark);
+    text-shadow: 3px 3px 0 var(--gold-light), 5px 5px 0 var(--gold-deep);
+  }
+  .hidden-blank {
+    display: inline-block;
+    color: var(--rose-deep);
+    background: rgba(139,61,79,0.15);
+    border: 3px dashed var(--rose-deep);
+    border-radius: 8px;
+    padding: 0 0.3em;
+    margin: 0 0.05em;
+    animation: blankPulse 1.5s ease-in-out infinite;
+    text-shadow: none;
+  }
+  @keyframes blankPulse {
+    0%, 100% { background: rgba(139,61,79,0.15); }
+    50% { background: rgba(139,61,79,0.3); }
+  }
+  .letter-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+  .letter-option {
+    background: var(--parch-1);
+    border: 3px solid var(--parch-edge);
+    border-radius: 14px;
+    padding: 0.9rem 0;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--ink);
+    box-shadow: 0 4px 0 var(--parch-edge);
+    transition: all 0.2s;
+  }
+  .letter-option:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+  .letter-option.correct {
+    background: #c5e0b3;
+    border-color: var(--swamp);
+    color: var(--swamp-deep);
+    animation: bounce 0.5s;
+  }
+  .letter-option.wrong {
+    background: #f5c6c6;
+    border-color: var(--dragon);
+    animation: shake 0.4s;
+  }
+
+  /* === MECHANIC 5: CONSTRUIS (build word from letters) === */
+  .build-game { text-align: center; }
+  .build-image {
+    font-size: 4.5rem;
+    margin: 0.2rem 0 0.4rem;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  }
+  .build-display {
+    background: var(--parch-1);
+    border: 3px solid var(--parch-edge);
+    border-radius: 12px;
+    padding: 0.7rem;
+    min-height: 60px;
+    margin: 0 auto 0.7rem;
+    max-width: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .build-cell {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: var(--rose-dark);
+    text-shadow: 2px 2px 0 var(--gold-light);
+    width: 1.6em;
+    text-align: center;
+    border-bottom: 3px solid var(--parch-edge);
+    padding-bottom: 0.1em;
+    transition: all 0.2s;
+  }
+  .build-cell.filled {
+    border-bottom-color: var(--gold-deep);
+    animation: cellFill 0.3s;
+  }
+  .build-cell.hint-glow {
+    background: rgba(212,160,69,0.2);
+    border-bottom-color: var(--gold);
+    animation: cellHint 1.5s ease-in-out infinite;
+  }
+  @keyframes cellHint {
+    0%, 100% { background: rgba(212,160,69,0.2); }
+    50% { background: rgba(212,160,69,0.5); }
+  }
+  @keyframes cellFill {
+    0% { transform: scale(1.4); color: var(--gold); }
+    100% { transform: scale(1); color: var(--rose-dark); }
+  }
+  .build-keyboard {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    max-width: 460px;
+    margin: 0 auto 0.7rem;
+  }
+  .build-key {
+    background: var(--parch-1);
+    border: 2px solid var(--parch-edge);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+    transition: all 0.12s;
+    box-shadow: 0 3px 0 var(--parch-edge);
+  }
+  .build-key:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .build-key:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--parch-edge); }
+  .build-key.hint {
+    background: var(--gold-light);
+    border-color: var(--gold);
+    box-shadow: 0 3px 0 var(--gold-deep), 0 0 15px var(--gold);
+    animation: keyHint 1s ease-in-out infinite;
+  }
+  @keyframes keyHint {
+    0%, 100% { box-shadow: 0 3px 0 var(--gold-deep), 0 0 15px var(--gold); }
+    50% { box-shadow: 0 3px 0 var(--gold-deep), 0 0 25px var(--gold-light); }
+  }
+  .build-key.wide {
+    grid-column: span 3;
+    background: var(--rose);
+    color: var(--parch-1);
+    border-color: var(--rose-deep);
+    box-shadow: 0 3px 0 var(--rose-deep);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .options-grid { gap: 0.45rem; }
+    .option-emoji { font-size: 2.3rem; }
+    .option-word { font-size: 0.82rem; }
+    .read-word { font-size: 2.2rem; }
+    .sound-prompt .target { font-size: 2.6rem; }
+    .modal { padding: 1.2rem 0.7rem 1rem; }
+    .sent-image, .write-emoji { font-size: 3.3rem; }
+    .write-cell { font-size: 1.5rem; }
+    .keyboard { grid-template-columns: repeat(7, 1fr); gap: 0.2rem; }
+    .key { padding: 0.42rem 0; font-size: 0.92rem; }
+    .char-portrait { width: 80px; height: 80px; font-size: 3.2rem; }
+    .char-name { font-size: 1.2rem; }
+    .moon { width: 45px; height: 45px; }
+    .stage-circle { width: 65px; height: 65px; font-size: 2rem; }
+    .gift-circle { width: 58px; height: 58px; font-size: 2rem; }
+    .stage-label { font-size: 0.62rem; padding: 0.1rem 0.4rem; }
+    .princess-marker .body { font-size: 1.8rem; }
+    .gift-box-wrap { width: 150px; height: 150px; }
+    .decoder-letter { font-size: 2.6rem; width: 60px; height: 75px; }
+    .decoder-merged { font-size: 2.5rem; }
+    .trace-canvas-wrap { width: 240px; height: 240px; }
+    .trace-letter-bg { font-size: 12rem; }
+    .mic-word-display { font-size: 3rem; }
+    .mic-button { width: 80px; height: 80px; font-size: 2rem; }
+    .hidden-word { font-size: 2.6rem; }
+    .hidden-image, .build-image { font-size: 3.5rem; }
+    .letter-options { gap: 0.4rem; }
+    .letter-option { font-size: 1.6rem; padding: 0.7rem 0; }
+    .build-cell { font-size: 1.5rem; }
+    .build-keyboard { gap: 0.2rem; }
+    .build-key { padding: 0.42rem 0; font-size: 0.92rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky-bg"></div>
+<div class="stars-bg" id="starsField"></div>
+<div class="moon"></div>
+
+<!-- INTRO -->
+<div class="intro-screen" id="intro">
+  <div class="scroll">
+    <h1>Ginevra<br>Apprend à Lire</h1>
+    <div class="ornament">📖 ✦ 📖</div>
+    <p>Bienvenue petite princesse ! Ici on apprend à <strong>vraiment</strong> lire. Tu vas tracer les lettres, deviner les mots cachés et lire à haute voix !</p>
+    <p style="margin-top:0.4rem">Et tous les trois châteaux... <strong>une boîte cadeau t'attend</strong> ! 🎁</p>
+    <p style="margin-top:0.6rem; font-size:0.95rem;">Quel est ton nom de princesse ?</p>
+    <input type="text" class="name-input" id="nameInput" placeholder="Ginevra" maxlength="20" value="Ginevra">
+    <br>
+    <button class="royal-btn" onclick="startAdventure()">En route !</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header style="display:none" id="hud">
+  <div class="crest">
+    <span class="icon">👑</span>
+    <span id="hudName">Ginevra</span>
+  </div>
+  <div class="hud-pills">
+    <div class="hud-pill" title="Étoiles"><span class="ico">⭐</span><span id="starCount">0</span></div>
+    <div class="hud-pill" title="Cadeaux"><span class="ico">🎁</span><span id="giftCount">0</span></div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main id="kingdom" style="display:none">
+  <div class="journey-title">
+    <span class="royal-tag">~ Le chemin de la lecture ~</span>
+    <h1>J'apprends à <span class="gold">lire</span></h1>
+    <p class="stage-name" id="stageName">Tracer les lettres</p>
+  </div>
+
+  <div class="journey-path" id="journeyPath"></div>
+
+  <div class="collection-shelf">
+    <h3>~ Mes Trésors Magiques ~</h3>
+    <div class="collection-grid" id="collectionGrid"></div>
+  </div>
+</main>
+
+<!-- Fairy mascot -->
+<div class="fairy" id="fairyMascot" onclick="fairyTalk()" style="display:none">
+  <span class="fairy-bubble" id="fairyBubble">Hihi !</span>
+  <span class="fairy-icon">🧚</span>
+</div>
+
+<button class="voice-fab" onclick="cycleVoice()">🎤 <span id="voiceLabel">Voix</span></button>
+<button class="reset-link" onclick="confirmReset()">Recommencer</button>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div class="victory" id="victory">
+  <div class="crown-big">📖</div>
+  <h2>Tu sais lire,<br>Princesse !</h2>
+  <p class="princess-name" id="victoryName">Princesse Ginevra</p>
+  <p>Tu as terminé le grand chemin de la lecture ! Tu traces, tu décodes, tu lis à haute voix ! Tous les héros des contes sont fiers de toi !</p>
+  <p style="font-size:2.5rem; margin: 0.8rem 0;">📖 ✨ 🌟 👑 🎉</p>
+  <button class="royal-btn" onclick="restartAll()">Recommencer ↻</button>
+</div>
+
+<script>
+/* ============================================================
+   STARS + FIREFLIES
+   ============================================================ */
+const starsField = document.getElementById('starsField');
+for (let i = 0; i < 90; i++) {
+  const s = document.createElement('div');
+  s.className = 'star-dot';
+  const size = Math.random() * 2 + 1;
+  s.style.width = size + 'px';
+  s.style.height = size + 'px';
+  s.style.left = Math.random() * 100 + 'vw';
+  s.style.top = Math.random() * 100 + 'vh';
+  s.style.animationDelay = Math.random() * 3 + 's';
+  s.style.animationDuration = (2 + Math.random() * 3) + 's';
+  starsField.appendChild(s);
+}
+function spawnFirefly() {
+  const f = document.createElement('div');
+  f.className = 'firefly';
+  f.style.left = Math.random() * 100 + 'vw';
+  f.style.top = (90 + Math.random() * 10) + 'vh';
+  f.style.animationDuration = (12 + Math.random() * 8) + 's, ' + (1.5 + Math.random()) + 's';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 22000);
+}
+setInterval(spawnFirefly, 1800);
+for (let i = 0; i < 6; i++) setTimeout(spawnFirefly, i * 300);
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let princessName = localStorage.getItem('princessName') || 'Ginevra';
+let stars = parseInt(localStorage.getItem('stars') || '0');
+let completedStages = JSON.parse(localStorage.getItem('completedStagesLecture') || '[]');
+let openedGifts = JSON.parse(localStorage.getItem('openedGiftsLecture') || '[]');
+let collection = JSON.parse(localStorage.getItem('collectionLecture') || '[]');
+
+let currentLevelId = null;
+let currentRound = 0;
+let totalRounds = 0;
+let roundsCorrect = 0;
+let questions = [];
+
+/* ============================================================
+   VOICE
+   ============================================================ */
+let availableVoices = [];
+let currentVoiceIdx = 0;
+let preferredVoices = [];
+
+function loadVoices() {
+  availableVoices = speechSynthesis.getVoices();
+  const frVoices = availableVoices.filter(v => v.lang.startsWith('fr'));
+  const score = (v) => {
+    let s = 0;
+    const n = v.name.toLowerCase();
+    if (/\(premium\)|\(enhanced\)/i.test(v.name)) s += 200;
+    if (/audrey|amelie|thomas|daniel/i.test(n)) s += 150;
+    if (/google/i.test(n)) s += 120;
+    if (/neural/i.test(n)) s += 100;
+    if (/microsoft/i.test(n) && /denise|henri|natural/i.test(n)) s += 90;
+    if (/virginie|celine|julie|marie|caroline|chloé/i.test(n)) s += 50;
+    if (/female|femme/i.test(n)) s += 30;
+    if (v.localService === false) s += 20;
+    return s;
+  };
+  preferredVoices = frVoices.sort((a, b) => score(b) - score(a));
+  updateVoiceLabel();
+}
+function updateVoiceLabel() {
+  const label = document.getElementById('voiceLabel');
+  if (preferredVoices.length === 0) { label.textContent = 'Voix'; return; }
+  const v = preferredVoices[currentVoiceIdx];
+  let name = v.name.replace(/Microsoft |Google |\(.*\)/g, '').trim();
+  if (name.length > 14) name = name.slice(0, 14) + '…';
+  label.textContent = name;
+}
+function cycleVoice() {
+  if (preferredVoices.length === 0) { loadVoices(); if (preferredVoices.length === 0) return; }
+  currentVoiceIdx = (currentVoiceIdx + 1) % preferredVoices.length;
+  updateVoiceLabel();
+  speak('Coucou !');
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+}
+function speak(text, opts = {}) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'fr-FR';
+  u.rate = opts.rate ?? 0.95;
+  u.pitch = opts.pitch ?? 1.25;
+  u.volume = 1;
+  if (preferredVoices.length > 0) u.voice = preferredVoices[currentVoiceIdx];
+  document.querySelectorAll('.speak-btn').forEach(b => b.classList.add('speaking'));
+  u.onend = () => document.querySelectorAll('.speak-btn').forEach(b => b.classList.remove('speaking'));
+  speechSynthesis.speak(u);
+}
+
+/* ============================================================
+   AUDIO TONES
+   ============================================================ */
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+  return audioCtx;
+}
+function playTone(freq, duration = 0.15, type = 'sine', volume = 0.15) {
+  const ctx = getAudio(); if (!ctx) return;
+  if (ctx.state === 'suspended') ctx.resume();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + duration);
+}
+function sndCorrect() { playTone(523, 0.12, 'sine', 0.18); setTimeout(() => playTone(659, 0.12, 'sine', 0.18), 100); setTimeout(() => playTone(784, 0.2, 'sine', 0.2), 200); }
+function sndWrong() { playTone(220, 0.15, 'triangle', 0.15); setTimeout(() => playTone(180, 0.2, 'triangle', 0.15), 120); }
+function sndPick() { playTone(440, 0.05, 'sine', 0.1); }
+function sndDrop() { playTone(660, 0.08, 'sine', 0.12); }
+function sndWin() { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => playTone(f, 0.22, 'sine', 0.2), i * 110)); }
+function sndGift() { [392, 523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.3, 'sine', 0.22), i * 90)); }
+
+/* ============================================================
+   READING DATA — organized by pedagogical mechanic
+   ============================================================ */
+
+// Ordered phonics progression — French CP method
+// Each "lesson" has a focus letter/sound and example words
+
+// MECHANIC 1: DÉCODAGE — sound by sound
+// Each item: word with letters (some can be silent like H), associated emoji
+const DECODE_DATA = {
+  easy: [
+    // Simple 3-letter CV/CVC words
+    { word: 'RAT', emoji: '🐀', sounds: [{l:'R',s:'rrr'},{l:'A',s:'aaa'},{l:'T',s:'te'}] },
+    { word: 'LIT', emoji: '🛏️', sounds: [{l:'L',s:'lll'},{l:'I',s:'iii'},{l:'T',s:'te'}] },
+    { word: 'MUR', emoji: '🧱', sounds: [{l:'M',s:'mmm'},{l:'U',s:'uuu'},{l:'R',s:'rrr'}] },
+    { word: 'NID', emoji: '🪺', sounds: [{l:'N',s:'nnn'},{l:'I',s:'iii'},{l:'D',s:'de'}] },
+    { word: 'ROI', emoji: '👑', sounds: [{l:'R',s:'rrr'},{l:'OI',s:'wa'}] },
+    { word: 'POT', emoji: '🍯', sounds: [{l:'P',s:'pe'},{l:'O',s:'ooo'},{l:'T',s:'te', silent: true}] },
+  ],
+  medium: [
+    { word: 'CHAT', emoji: '🐱', sounds: [{l:'CH',s:'cheu'},{l:'A',s:'aaa'},{l:'T',s:'te', silent: true}] },
+    { word: 'LUNE', emoji: '🌙', sounds: [{l:'L',s:'lll'},{l:'U',s:'uuu'},{l:'N',s:'nnn'},{l:'E',s:'eu', silent: true}] },
+    { word: 'POMME', emoji: '🍎', sounds: [{l:'P',s:'pe'},{l:'O',s:'ooo'},{l:'MM',s:'mmm'},{l:'E',s:'eu', silent: true}] },
+    { word: 'LOUP', emoji: '🐺', sounds: [{l:'L',s:'lll'},{l:'OU',s:'ou'},{l:'P',s:'pe', silent: true}] },
+    { word: 'FÉE', emoji: '🧚', sounds: [{l:'F',s:'fff'},{l:'É',s:'é'},{l:'E',s:'eu', silent: true}] },
+    { word: 'OURS', emoji: '🐻', sounds: [{l:'OU',s:'ou'},{l:'R',s:'rrr'},{l:'S',s:'sss'}] },
+  ],
+  hard: [
+    { word: 'CHEVAL', emoji: '🐴', sounds: [{l:'CH',s:'cheu'},{l:'E',s:'eu'},{l:'V',s:'vvv'},{l:'A',s:'aaa'},{l:'L',s:'lll'}] },
+    { word: 'MAISON', emoji: '🏠', sounds: [{l:'M',s:'mmm'},{l:'AI',s:'è'},{l:'S',s:'sss'},{l:'ON',s:'on'}] },
+    { word: 'PAPILLON', emoji: '🦋', sounds: [{l:'P',s:'pe'},{l:'A',s:'aaa'},{l:'P',s:'pe'},{l:'ILL',s:'ill'},{l:'ON',s:'on'}] },
+    { word: 'CHÂTEAU', emoji: '🏰', sounds: [{l:'CH',s:'cheu'},{l:'Â',s:'aaa'},{l:'TEAU',s:'to'}] },
+    { word: 'DRAGON', emoji: '🐉', sounds: [{l:'D',s:'de'},{l:'R',s:'rrr'},{l:'A',s:'aaa'},{l:'G',s:'gue'},{l:'ON',s:'on'}] },
+  ]
+};
+
+// MECHANIC 2: TRACÉ — letter to trace, with stroke path (simplified for MVP: just the letter)
+const TRACE_DATA = {
+  easy: [
+    { letter: 'A', name: 'A', sound: 'aaa' },
+    { letter: 'I', name: 'I', sound: 'iii' },
+    { letter: 'O', name: 'O', sound: 'ooo' },
+    { letter: 'U', name: 'U', sound: 'uuu' },
+    { letter: 'E', name: 'E', sound: 'eu' },
+  ],
+  medium: [
+    { letter: 'M', name: 'M', sound: 'mmm' },
+    { letter: 'L', name: 'L', sound: 'lll' },
+    { letter: 'R', name: 'R', sound: 'rrr' },
+    { letter: 'P', name: 'P', sound: 'pe' },
+    { letter: 'S', name: 'S', sound: 'sss' },
+    { letter: 'T', name: 'T', sound: 'te' },
+  ],
+  hard: [
+    { letter: 'B', name: 'B', sound: 'be' },
+    { letter: 'D', name: 'D', sound: 'de' },
+    { letter: 'F', name: 'F', sound: 'fff' },
+    { letter: 'C', name: 'C', sound: 'ke' },
+    { letter: 'N', name: 'N', sound: 'nnn' },
+    { letter: 'V', name: 'V', sound: 'vvv' },
+  ]
+};
+
+// MECHANIC 3: MIC — read aloud
+// Same structure as build but checked via Web Speech Recognition
+const MIC_DATA = {
+  easy: [
+    { word: 'CHAT', emoji: '🐱', accept: ['chat','sha','cha'] },
+    { word: 'RAT', emoji: '🐀', accept: ['rat','ra'] },
+    { word: 'ROI', emoji: '👑', accept: ['roi','rwa','rua'] },
+    { word: 'LIT', emoji: '🛏️', accept: ['lit','li'] },
+    { word: 'OIE', emoji: '🪿', accept: ['oie','wa'] },
+  ],
+  medium: [
+    { word: 'LUNE', emoji: '🌙', accept: ['lune','lyne'] },
+    { word: 'POMME', emoji: '🍎', accept: ['pomme','pome'] },
+    { word: 'FÉE', emoji: '🧚', accept: ['fée','fé','fee'] },
+    { word: 'LOUP', emoji: '🐺', accept: ['loup','lou'] },
+    { word: 'OURS', emoji: '🐻', accept: ['ours','our'] },
+  ],
+  hard: [
+    { word: 'CHEVAL', emoji: '🐴', accept: ['cheval','sheval'] },
+    { word: 'MAISON', emoji: '🏠', accept: ['maison','mèzon','mezon'] },
+    { word: 'CHÂTEAU', emoji: '🏰', accept: ['château','chato','sato'] },
+    { word: 'DRAGON', emoji: '🐉', accept: ['dragon','drago'] },
+    { word: 'PAPILLON', emoji: '🦋', accept: ['papillon','papiyon'] },
+  ]
+};
+
+// MECHANIC 4: HIDDEN LETTER
+const HIDDEN_DATA = {
+  easy: [
+    { word: 'CHAT', emoji: '🐱', hideIdx: 0, options: ['C','B','M','P'] },
+    { word: 'RAT', emoji: '🐀', hideIdx: 0, options: ['R','L','T','D'] },
+    { word: 'LIT', emoji: '🛏️', hideIdx: 1, options: ['I','A','O','U'] },
+    { word: 'ROI', emoji: '👑', hideIdx: 2, options: ['I','A','E','O'] },
+    { word: 'OIE', emoji: '🪿', hideIdx: 0, options: ['O','A','U','I'] },
+    { word: 'PIE', emoji: '🐦', hideIdx: 0, options: ['P','B','D','T'] },
+    { word: 'ANE', emoji: '🐴', hideIdx: 1, options: ['N','M','R','L'] },
+  ],
+  medium: [
+    { word: 'LUNE', emoji: '🌙', hideIdx: 1, options: ['U','A','I','O'] },
+    { word: 'POMME', emoji: '🍎', hideIdx: 2, options: ['M','N','R','L'] },
+    { word: 'FÉE', emoji: '🧚', hideIdx: 0, options: ['F','V','B','P'] },
+    { word: 'LOUP', emoji: '🐺', hideIdx: 1, options: ['O','A','E','I'] },
+    { word: 'OURS', emoji: '🐻', hideIdx: 2, options: ['R','L','M','N'] },
+    { word: 'FLEUR', emoji: '🌸', hideIdx: 0, options: ['F','V','B','P'] },
+    { word: 'POULE', emoji: '🐔', hideIdx: 2, options: ['U','A','I','O'] },
+    { word: 'CHIEN', emoji: '🐶', hideIdx: 4, options: ['N','M','R','L'] },
+    { word: 'ARBRE', emoji: '🌳', hideIdx: 0, options: ['A','E','I','O'] },
+  ],
+  hard: [
+    { word: 'CHEVAL', emoji: '🐴', hideIdx: 1, options: ['H','M','N','R'] },
+    { word: 'MAISON', emoji: '🏠', hideIdx: 2, options: ['I','A','E','O'] },
+    { word: 'AVION', emoji: '✈️', hideIdx: 1, options: ['V','B','M','N'] },
+    { word: 'CHÂTEAU', emoji: '🏰', hideIdx: 0, options: ['C','B','D','P'] },
+    { word: 'DRAGON', emoji: '🐉', hideIdx: 2, options: ['A','E','I','O'] },
+    { word: 'PAPILLON', emoji: '🦋', hideIdx: 4, options: ['I','A','O','U'] },
+    { word: 'PRINCESSE', emoji: '👸', hideIdx: 4, options: ['E','A','I','O'] },
+    { word: 'GÂTEAU', emoji: '🎂', hideIdx: 5, options: ['U','A','I','O'] },
+    { word: 'SOLEIL', emoji: '☀️', hideIdx: 4, options: ['I','A','E','O'] },
+  ]
+};
+
+// MECHANIC 5: BUILD WORD (from image, no audio first)
+const BUILD_DATA = {
+  easy: [
+    { word: 'CHAT', emoji: '🐱', hint: 'Miaou' },
+    { word: 'RAT', emoji: '🐀', hint: 'Petit animal gris' },
+    { word: 'ROI', emoji: '👑', hint: 'Couronne' },
+    { word: 'LIT', emoji: '🛏️', hint: 'Pour dormir' },
+    { word: 'PIE', emoji: '🐦', hint: 'Oiseau' },
+    { word: 'OIE', emoji: '🪿', hint: 'Coin coin' },
+    { word: 'ANE', emoji: '🐴', hint: 'Hihan' },
+  ],
+  medium: [
+    { word: 'LUNE', emoji: '🌙', hint: 'Brille la nuit' },
+    { word: 'POMME', emoji: '🍎', hint: 'Fruit rouge' },
+    { word: 'FEE', emoji: '🧚', hint: 'Magique' },
+    { word: 'LOUP', emoji: '🐺', hint: 'Hou hou' },
+    { word: 'OURS', emoji: '🐻', hint: 'Gros animal' },
+    { word: 'CHIEN', emoji: '🐶', hint: 'Wouf wouf' },
+    { word: 'LAPIN', emoji: '🐰', hint: 'Saute saute' },
+    { word: 'FLEUR', emoji: '🌸', hint: 'Sent bon' },
+  ],
+  hard: [
+    { word: 'DRAGON', emoji: '🐉', hint: 'Crache du feu' },
+    { word: 'CHATEAU', emoji: '🏰', hint: 'Maison du roi' },
+    { word: 'PRINCESSE', emoji: '👸', hint: 'Fille du roi' },
+    { word: 'PAPILLON', emoji: '🦋', hint: 'Joli insecte' },
+    { word: 'COURONNE', emoji: '👑', hint: 'Sur la tête' },
+    { word: 'SOLEIL', emoji: '☀️', hint: 'Brille le jour' },
+    { word: 'GATEAU', emoji: '🎂', hint: 'Bon dessert' },
+  ]
+};
+/* ============================================================
+   PATH — 24 stages + 8 gifts arranged in a vertical journey
+   Each stage: type='stage' or 'gift'
+   biome: forest | village | mountain | swamp | sky | castle
+   side: which side of path (left/center/right) to alternate
+   ============================================================ */
+
+// LECTURE PATH — progression: trace → decode → hidden → build → mic → all
+// Mechanics: trace | decode | hidden | build | mic
+const PATH = [
+  // === ACT 1: TRACER LES LETTRES (memoria muscolare delle vocali) ===
+  { type: 'stage', id: 's1', biome: 'forest', char: '🐀', name: 'Le Petit Rat',
+    sub: 'Trace les voyelles', game: 'trace', diff: 'easy', rounds: 5,
+    intro: (n) => `Couic couic ${n} ! Trace les lettres avec ton doigt !` },
+  { type: 'stage', id: 's2', biome: 'forest', char: '🐔', name: 'Madame Poule',
+    sub: 'Trace les consonnes', game: 'trace', diff: 'medium', rounds: 5,
+    intro: (n) => `Cot cot ${n} ! On trace ensemble ?` },
+  { type: 'stage', id: 's3', biome: 'forest', char: '🐻', name: 'Petit Ours',
+    sub: 'Décode les petits mots', game: 'decode', diff: 'easy', rounds: 5,
+    intro: (n) => `Coucou ${n} ! On lit lettre par lettre !` },
+  { type: 'gift', id: 'g1', biome: 'forest', name: 'Premier Cadeau',
+    reward: { emoji: '🌹', name: 'La Rose Magique', desc: 'pour parfumer la lecture !' } },
+
+  // === ACT 2: DÉCODER LES SONS (sillaba per sillaba) ===
+  { type: 'stage', id: 's4', biome: 'village', char: '🔴', name: 'Chaperon Rouge',
+    sub: 'Décode les mots', game: 'decode', diff: 'medium', rounds: 5,
+    intro: (n) => `Coucou ${n} ! Lis avec moi, lettre par lettre !` },
+  { type: 'stage', id: 's5', biome: 'village', char: '🦗', name: 'Pinocchio',
+    sub: 'La lettre cachée', game: 'hidden', diff: 'easy', rounds: 5,
+    intro: (n) => `Salut ${n} ! Quelle lettre s'est cachée ?` },
+  { type: 'stage', id: 's6', biome: 'village', char: '👠', name: 'Cendrillon',
+    sub: 'Construis le mot', game: 'build', diff: 'easy', rounds: 5,
+    intro: (n) => `Vite ${n} ! Avant minuit, écris les mots !` },
+  { type: 'stage', id: 's7', biome: 'village', char: '🐱', name: 'Le Chat Botté',
+    sub: 'Trace les autres lettres', game: 'trace', diff: 'hard', rounds: 5,
+    intro: (n) => `Miaou ${n} ! On trace les lettres difficiles !` },
+  { type: 'gift', id: 'g2', biome: 'village', name: 'Deuxième Cadeau',
+    reward: { emoji: '👑', name: 'La Petite Couronne', desc: 'pour briller comme une étoile !' } },
+
+  // === ACT 3: LA LETTRE CACHÉE (analisi visiva) ===
+  { type: 'stage', id: 's8', biome: 'mountain', char: '🥖', name: 'Le Boulanger',
+    sub: 'Lettres cachées', game: 'hidden', diff: 'medium', rounds: 5,
+    intro: (n) => `Bonjour ${n} ! Une lettre s\'est cachée dans la baguette !` },
+  { type: 'stage', id: 's9', biome: 'mountain', char: '🐘', name: 'Babar',
+    sub: 'Décode plus vite', game: 'decode', diff: 'medium', rounds: 6,
+    intro: (n) => `Bonjour ${n} ! Décodons les mots ensemble !` },
+  { type: 'stage', id: 's10', biome: 'mountain', char: '👸', name: 'Belle au Bois Dormant',
+    sub: 'Construis sans aide', game: 'build', diff: 'medium', rounds: 5,
+    intro: (n) => `Hummm... ${n} ! Réveille-moi en construisant les mots !` },
+  { type: 'gift', id: 'g3', biome: 'mountain', name: 'Troisième Cadeau',
+    reward: { emoji: '🦋', name: 'L\'Aile de Papillon', desc: 'pour voler dans les rêves !' } },
+
+  // === ACT 4: CONSTRUIRE LES MOTS (decodifica → scrittura) ===
+  { type: 'stage', id: 's11', biome: 'swamp', char: '🧌', name: 'Shrek',
+    sub: 'Construis les grands mots', game: 'build', diff: 'medium', rounds: 6,
+    intro: (n) => `OH ${n} ! Construis les mots du marais !` },
+  { type: 'stage', id: 's12', biome: 'swamp', char: '🐴', name: 'L\'Âne (Donkey)',
+    sub: 'Lettres cachées dures', game: 'hidden', diff: 'hard', rounds: 6,
+    intro: (n) => `Wahou ${n} ! Trouve la lettre disparue !` },
+  { type: 'stage', id: 's13', biome: 'swamp', char: '🐉', name: 'Le Dragon',
+    sub: 'Décode les mots longs', game: 'decode', diff: 'hard', rounds: 5,
+    intro: (n) => `Grrr ${n} ! Décode les mots de dragon !` },
+  { type: 'gift', id: 'g4', biome: 'swamp', name: 'Quatrième Cadeau',
+    reward: { emoji: '🍄', name: 'Le Champignon Magique', desc: 'qui chante quand tu marches !' } },
+
+  // === ACT 5: LIRE À HAUTE VOIX (microfono!) ===
+  { type: 'stage', id: 's14', biome: 'sky', char: '🤴', name: 'Le Petit Prince',
+    sub: 'Lis à haute voix', game: 'mic', diff: 'easy', rounds: 5,
+    intro: (n) => `Bonjour ${n} ! Lis à haute voix, je t\'écoute !` },
+  { type: 'stage', id: 's15', biome: 'sky', char: '🌹', name: 'La Rose',
+    sub: 'Lis plus de mots', game: 'mic', diff: 'medium', rounds: 5,
+    intro: (n) => `Pfff ${n} ! Lis-moi des mots avec tes lèvres !` },
+  { type: 'stage', id: 's16', biome: 'sky', char: '🦊', name: 'Le Renard',
+    sub: 'Construis sans image', game: 'build', diff: 'hard', rounds: 5,
+    intro: (n) => `Coucou ${n} ! Apprivoise les mots difficiles !` },
+  { type: 'gift', id: 'g5', biome: 'sky', name: 'Cinquième Cadeau',
+    reward: { emoji: '⭐', name: 'L\'Étoile Filante', desc: 'pour faire un voeu !' } },
+
+  // === ACT 6: LE GRAND LIVRE (boss : tutto insieme) ===
+  { type: 'stage', id: 's17', biome: 'castle', char: '🐭', name: 'Les Souris',
+    sub: 'Décode très vite', game: 'decode', diff: 'hard', rounds: 6,
+    intro: (n) => `Couic couic ${n} ! Décode tout très vite !` },
+  { type: 'stage', id: 's18', biome: 'castle', char: '🧜‍♀️', name: 'La Petite Sirène',
+    sub: 'Lis à haute voix !', game: 'mic', diff: 'hard', rounds: 5,
+    intro: (n) => `Wahou ${n} ! Lis-moi les grands mots !` },
+  { type: 'stage', id: 's19', biome: 'castle', char: '🧚', name: 'La Bonne Fée',
+    sub: 'Construis les grands mots', game: 'build', diff: 'hard', rounds: 6,
+    intro: (n) => `Bibbidi bobbidi boo ${n} ! Construis tous les mots !` },
+  { type: 'stage', id: 's20', biome: 'castle', char: '👑', name: 'La Reine FINALE',
+    sub: 'Boss : lis à haute voix !', game: 'mic', diff: 'hard', rounds: 5,
+    intro: (n) => `${n}, lis ces mots à haute voix pour devenir reine !` },
+  { type: 'gift', id: 'g6', biome: 'castle', name: 'GRAND CADEAU',
+    reward: { emoji: '👑', name: 'La Couronne du Lecteur', desc: 'tu sais lire !' } },
+];
+
+const succ = [
+  () => `Bravo !`, () => `Oui !`, () => `Trop bien !`, () => `Wahou !`,
+  () => `Génial ${princessName} !`, () => `Hihi, super !`, () => `Yes !`,
+  () => `Magique !`, () => `Top !`,
+];
+const tryAgain = [
+  () => `Oh non !`, () => `Presque !`, () => `Encore !`,
+  () => `Essaie !`, () => `Pas grave !`, () => `Allez !`,
+];
+const finishLine = [
+  (n) => `Bravo ${n} ! On continue !`,
+  (n) => `Wahou ${n} !`,
+  (n) => `Tu es la meilleure ${n} !`,
+  (n) => `Hihi ${n} ! Au suivant !`,
+];
+const fairyPhrases = [
+  'Hihi !', 'Coucou !', 'Continue !', 'Bravo !', 'Tu es magique !',
+  'On y va !', 'Trop bien !', 'Allez !'
+];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function normalize(s) { return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase(); }
+
+/* ============================================================
+   UI Helpers
+   ============================================================ */
+function updateHUD() {
+  document.getElementById('starCount').textContent = stars;
+  document.getElementById('giftCount').textContent = openedGifts.length;
+  document.getElementById('hudName').textContent = princessName;
+}
+function addStar(n = 1) {
+  stars += n;
+  localStorage.setItem('stars', stars);
+  updateHUD();
+}
+function confetti(n = 60) {
+  const colors = ['#d4a045', '#8b3d4f', '#4a6b3a', '#c87a8a', '#5a2545', '#7ba14d', '#f0c970'];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+function sparkleAt(el) {
+  const rect = el.getBoundingClientRect();
+  const sparks = ['✨', '⭐', '💫', '🌟'];
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('span');
+    s.className = 'sparkle';
+    s.textContent = pick(sparks);
+    s.style.left = (rect.left + rect.width/2 + (Math.random() - 0.5) * 80) + 'px';
+    s.style.top = (rect.top + rect.height/2) + 'px';
+    s.style.animationDelay = (i * 0.08) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1200);
+  }
+}
+
+/* ============================================================
+   PATH RENDERING
+   ============================================================ */
+const STAGE_HEIGHT = 130; // vertical distance between stages
+const PATH_WIDTH_PCT = 80; // path zigzag amplitude (% of container)
+
+function getStageX(idx) {
+  // Sinusoidal zigzag — feels like a winding path
+  const t = idx;
+  return 50 + Math.sin(t * 0.85) * (PATH_WIDTH_PCT / 2);
+}
+function getStageY(idx) {
+  return 80 + idx * STAGE_HEIGHT;
+}
+
+function isStageUnlocked(idx) {
+  if (idx === 0) return true;
+  // Need previous stage completed (gifts auto-unlocked)
+  for (let i = idx - 1; i >= 0; i--) {
+    const prev = PATH[i];
+    if (prev.type === 'stage') {
+      return completedStages.includes(prev.id);
+    }
+  }
+  return true;
+}
+
+function isGiftUnlocked(idx) {
+  // Gift unlocked when ALL previous stages (back to last gift) are completed
+  for (let i = idx - 1; i >= 0; i--) {
+    const item = PATH[i];
+    if (item.type === 'gift') break;
+    if (item.type === 'stage' && !completedStages.includes(item.id)) return false;
+  }
+  return true;
+}
+
+function renderJourney() {
+  const path = document.getElementById('journeyPath');
+  const totalHeight = 80 + PATH.length * STAGE_HEIGHT + 100;
+  path.style.height = totalHeight + 'px';
+
+  // Group biomes
+  let html = '';
+  const biomeRanges = [];
+  let currentBiome = null;
+  let biomeStart = 0;
+  PATH.forEach((p, i) => {
+    if (p.biome !== currentBiome) {
+      if (currentBiome !== null) {
+        biomeRanges.push({ biome: currentBiome, start: biomeStart, end: i });
+      }
+      currentBiome = p.biome;
+      biomeStart = i;
+    }
+  });
+  biomeRanges.push({ biome: currentBiome, start: biomeStart, end: PATH.length });
+
+  // Biome backgrounds
+  biomeRanges.forEach(b => {
+    const top = getStageY(b.start) - 80;
+    const bottom = getStageY(b.end - 1) + 80;
+    html += `<div class="biome biome-${b.biome}" style="top:${top}px; height:${bottom - top}px;"></div>`;
+  });
+
+  // Biome decorations (stars, trees, etc.)
+  biomeRanges.forEach(b => {
+    const top = getStageY(b.start) - 60;
+    const bottom = getStageY(b.end - 1) + 60;
+    const decoCount = (b.end - b.start) * 2;
+    const decoEmojis = {
+      forest: ['🌲', '🌳', '🍄', '🦋', '🌿'],
+      village: ['🏠', '🌻', '🥖', '🐔', '🌷'],
+      mountain: ['⛰️', '🪨', '❄️', '🏔️', '🦅'],
+      swamp: ['🌾', '🐸', '🪲', '🐌', '🌴'],
+      sky: ['☁️', '⭐', '🌠', '🌟', '💫'],
+      castle: ['🏰', '⚔️', '🛡️', '🗡️', '👑']
+    };
+    for (let i = 0; i < decoCount; i++) {
+      const x = Math.random() * 100;
+      const y = top + Math.random() * (bottom - top);
+      const emoji = pick(decoEmojis[b.biome] || ['✨']);
+      const size = 1.4 + Math.random() * 1.2;
+      const rot = (Math.random() - 0.5) * 30;
+      html += `<span class="biome-deco" style="left:${x}%; top:${y}px; font-size:${size}rem; transform:rotate(${rot}deg);">${emoji}</span>`;
+    }
+  });
+
+  // Path SVG
+  let pathD = '';
+  PATH.forEach((p, i) => {
+    const x = getStageX(i);
+    const y = getStageY(i);
+    if (i === 0) pathD += `M ${x}% ${y} `;
+    else pathD += `L ${x}% ${y} `;
+  });
+
+  // Determine which segments are completed
+  const lastCompletedIdx = (() => {
+    for (let i = PATH.length - 1; i >= 0; i--) {
+      if (PATH[i].type === 'stage' && completedStages.includes(PATH[i].id)) return i;
+      if (PATH[i].type === 'gift' && openedGifts.includes(PATH[i].id)) return i;
+    }
+    return -1;
+  })();
+
+  let completedPathD = '';
+  if (lastCompletedIdx >= 0) {
+    PATH.slice(0, lastCompletedIdx + 1).forEach((p, i) => {
+      const x = getStageX(i);
+      const y = getStageY(i);
+      if (i === 0) completedPathD += `M ${x}% ${y} `;
+      else completedPathD += `L ${x}% ${y} `;
+    });
+  }
+
+  html += `
+    <svg class="path-svg" preserveAspectRatio="none">
+      <path class="path-line" d="${pathD}"/>
+      ${completedPathD ? `<path class="path-line completed" d="${completedPathD}"/>` : ''}
+    </svg>
+  `;
+
+  // Stages and gifts
+  PATH.forEach((p, i) => {
+    const x = getStageX(i);
+    const y = getStageY(i);
+    if (p.type === 'stage') {
+      const completed = completedStages.includes(p.id);
+      const unlocked = isStageUnlocked(i);
+      html += `
+        <div class="stage ${completed ? 'completed' : ''} ${!unlocked ? 'locked' : ''}"
+             style="left:${x}%; top:${y}px;"
+             onclick="${unlocked ? `openLevel('${p.id}')` : `tryLocked()`}">
+          <div class="stage-circle">${p.char}</div>
+          <div class="stage-label">${p.name}</div>
+        </div>
+      `;
+    } else if (p.type === 'gift') {
+      const opened = openedGifts.includes(p.id);
+      const unlocked = isGiftUnlocked(i);
+      html += `
+        <div class="gift ${opened ? 'opened' : ''} ${!unlocked ? 'locked' : ''}"
+             style="left:${x}%; top:${y}px;"
+             onclick="${unlocked ? `openGift('${p.id}')` : `tryLocked()`}">
+          <div class="gift-circle">${opened ? '✨' : '🎁'}</div>
+        </div>
+      `;
+    }
+  });
+
+  // Princess marker on the latest unlocked stage
+  const nextIdx = (() => {
+    for (let i = 0; i < PATH.length; i++) {
+      const p = PATH[i];
+      if (p.type === 'stage' && !completedStages.includes(p.id)) return i;
+      if (p.type === 'gift' && !openedGifts.includes(p.id) && isGiftUnlocked(i)) return i;
+    }
+    return PATH.length - 1;
+  })();
+
+  const px = getStageX(nextIdx);
+  const py = getStageY(nextIdx);
+  html += `<div class="princess-marker" style="left:${px}%; top:${py}px;"><span class="body">👸</span></div>`;
+
+  path.innerHTML = html;
+
+  // Update biome name
+  const biomeNames = {
+    forest: 'Tracer les Lettres',
+    village: 'Décoder les Sons',
+    mountain: 'La Lettre Cachée',
+    swamp: 'Construire les Mots',
+    sky: 'Lire à Haute Voix',
+    castle: 'Le Grand Livre'
+  };
+  const currentBiomeName = PATH[Math.min(nextIdx, PATH.length - 1)].biome;
+  document.getElementById('stageName').textContent = biomeNames[currentBiomeName];
+
+  renderCollection();
+}
+
+function renderCollection() {
+  const grid = document.getElementById('collectionGrid');
+  // 6 reward slots
+  const giftItems = PATH.filter(p => p.type === 'gift');
+  grid.innerHTML = giftItems.map(g => {
+    const owned = openedGifts.includes(g.id);
+    return `<div class="collection-item ${owned ? 'unlocked' : ''}" title="${owned ? g.reward.name : 'Verrouillé'}">${owned ? g.reward.emoji : '?'}</div>`;
+  }).join('');
+}
+
+function tryLocked() {
+  sndWrong();
+  showFairy('Termine d\'abord ! 🔒');
+}
+
+/* ============================================================
+   FAIRY MASCOT
+   ============================================================ */
+function showFairy(text) {
+  const bubble = document.getElementById('fairyBubble');
+  bubble.textContent = text;
+  bubble.classList.add('show');
+  clearTimeout(window._fairyTimer);
+  window._fairyTimer = setTimeout(() => bubble.classList.remove('show'), 2500);
+}
+function fairyTalk() {
+  const phrase = pick(fairyPhrases);
+  showFairy(phrase);
+  speak(phrase);
+}
+
+/* ============================================================
+   LEVEL LIFECYCLE
+   ============================================================ */
+function startAdventure() {
+  const inp = document.getElementById('nameInput');
+  const name = inp.value.trim() || 'Ginevra';
+  princessName = name;
+  localStorage.setItem('princessName', name);
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('kingdom').style.display = 'block';
+  document.getElementById('fairyMascot').style.display = 'block';
+  document.getElementById('victoryName').textContent = 'Princesse ' + name;
+  updateHUD();
+  renderJourney();
+  setTimeout(() => speak(`Coucou ${name} ! On y va ?`), 800);
+  setTimeout(() => showFairy(`Coucou ${name} !`), 1200);
+  getAudio()?.resume();
+
+  // Scroll to next stage
+  setTimeout(() => {
+    const next = document.querySelector('.princess-marker');
+    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 1500);
+}
+
+function openLevel(id) {
+  const L = PATH.find(p => p.id === id);
+  if (!L || L.type !== 'stage') return;
+  currentLevelId = id;
+  currentRound = 0;
+  roundsCorrect = 0;
+  totalRounds = L.rounds;
+  document.getElementById('modal').classList.add('active');
+  showCharIntro(L);
+}
+
+function showCharIntro(L) {
+  document.getElementById('modalContent').innerHTML = `
+    <div class="char-intro">
+      <div class="char-portrait">${L.char}</div>
+      <div class="char-name">${L.name}</div>
+      <div class="char-title-sub">${L.sub}</div>
+      <div class="char-speech">${L.intro(princessName)}</div>
+      <button class="royal-btn" onclick="beginGame()">C'est parti ! ✨</button>
+    </div>
+  `;
+  speak(L.intro(princessName));
+}
+
+function beginGame() {
+  speechSynthesis.cancel();
+  startRound();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  speechSynthesis.cancel();
+  if (typeof clearHelpTimers === 'function') clearHelpTimers();
+  if (micRecognition && micState.listening) try { micRecognition.stop(); } catch(e) {}
+  renderJourney();
+  updateHUD();
+}
+
+function renderProgress() {
+  let html = '<div class="progress">';
+  for (let i = 0; i < totalRounds; i++) {
+    let cls = 'dot';
+    if (i < currentRound) cls += ' done';
+    else if (i === currentRound) cls += ' current';
+    html += `<span class="${cls}"></span>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+/* ============================================================
+   HELP SYSTEM — progressive hints when stuck
+   ============================================================ */
+let helpTimer1 = null, helpTimer2 = null, helpTimer3 = null;
+
+function clearHelpTimers() {
+  clearTimeout(helpTimer1);
+  clearTimeout(helpTimer2);
+  clearTimeout(helpTimer3);
+}
+
+function startHelpTimers(level1, level2, level3) {
+  clearHelpTimers();
+  // After 5s: subtle visual hint
+  helpTimer1 = setTimeout(() => level1 && level1(), 5000);
+  // After 10s: stronger hint + fairy speaks
+  helpTimer2 = setTimeout(() => level2 && level2(), 10000);
+  // After 16s: gives the answer (or close to)
+  helpTimer3 = setTimeout(() => level3 && level3(), 16000);
+}
+
+function showHelpBubble(text) {
+  const existing = document.querySelector('.help-fairy');
+  if (existing) existing.remove();
+  const modal = document.querySelector('.modal');
+  if (!modal) return;
+  const bubble = document.createElement('div');
+  bubble.className = 'help-fairy';
+  bubble.innerHTML = '🧚 ' + text;
+  modal.appendChild(bubble);
+  setTimeout(() => bubble.remove(), 5000);
+}
+
+function startRound() {
+  clearHelpTimers();
+  const L = PATH.find(p => p.id === currentLevelId);
+  if (currentRound === 0) {
+    const dataset = ({
+      'decode': DECODE_DATA,
+      'trace': TRACE_DATA,
+      'mic': MIC_DATA,
+      'hidden': HIDDEN_DATA,
+      'build': BUILD_DATA
+    })[L.game];
+    questions = shuffle(dataset[L.diff]).slice(0, totalRounds);
+  }
+  if (currentRound >= totalRounds) { renderEndStage(); return; }
+  if (L.game === 'decode') renderDecode(L);
+  else if (L.game === 'trace') renderTrace(L);
+  else if (L.game === 'mic') renderMic(L);
+  else if (L.game === 'hidden') renderHidden(L);
+  else if (L.game === 'build') renderBuild(L);
+}
+
+/* ============================================================
+   MECHANIC 1: DÉCODAGE — sound by sound, then merge
+   ============================================================ */
+function renderDecode(L) {
+  const q = questions[currentRound];
+  document.getElementById('modalContent').innerHTML = `
+    <div class="game-header"><span class="small-char">${L.char}</span><h3>Décode le <span style="color:var(--gold-deep)">mot</span></h3></div>
+    ${renderProgress()}
+    <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.1rem; color:var(--ink-soft); margin-bottom:0.4rem;">Touche chaque lettre pour entendre son son</p>
+    <div class="decoder-game">
+      <div class="decoder-letters" id="decoderLetters">
+        ${q.sounds.map((s, i) => `
+          <div class="decoder-letter ${s.silent?'silent':''}" data-idx="${i}" onclick="playDecoderSound(${i})">${s.l}</div>
+        `).join('')}
+      </div>
+      <button class="decoder-replay" onclick="playAllSounds()">▶ Tous les sons</button>
+      <div id="decoderMerged" style="margin-top:0.5rem; min-height:80px;"></div>
+      <div id="decoderOptions" style="display:none; margin-top:0.5rem;">
+        <p style="font-family:'Caveat',cursive; font-size:1.2rem; color:var(--ink); margin-bottom:0.5rem;">Quelle est l'image du mot ?</p>
+        <div class="options-grid" id="decoderOptionsGrid"></div>
+      </div>
+    </div>
+  `;
+  decoderState = { played: new Set(), q };
+
+  // Help: after 7s, auto-play first letter; after 14s play all; after 22s show merged
+  startHelpTimers(
+    () => { if (decoderState.played.size === 0) { playDecoderSound(0); showHelpBubble('Touche les lettres une par une !'); } },
+    () => { if (decoderState.played.size < q.sounds.length) playAllSounds(); },
+    () => mergeAndChoose()
+  );
+}
+
+let decoderState = { played: new Set(), q: null };
+
+function playDecoderSound(idx) {
+  const s = decoderState.q.sounds[idx];
+  if (s.silent) return; // silent letters don't make a sound
+  speak(s.s, { rate: 0.5, pitch: 1.3 });
+  const el = document.querySelector(`.decoder-letter[data-idx="${idx}"]`);
+  if (el) el.classList.add('played');
+  decoderState.played.add(idx);
+  // If all non-silent letters played, auto-merge after a moment
+  const totalNonSilent = decoderState.q.sounds.filter(x => !x.silent).length;
+  if (decoderState.played.size >= totalNonSilent) {
+    setTimeout(mergeAndChoose, 800);
+  }
+}
+
+function playAllSounds() {
+  const sounds = decoderState.q.sounds.filter(s => !s.silent);
+  sounds.forEach((s, i) => {
+    setTimeout(() => {
+      speak(s.s, { rate: 0.5, pitch: 1.3 });
+      const realIdx = decoderState.q.sounds.indexOf(s);
+      const el = document.querySelector(`.decoder-letter[data-idx="${realIdx}"]`);
+      if (el) {
+        el.classList.add('played');
+        setTimeout(() => el.classList.remove('played'), 600);
+      }
+      decoderState.played.add(realIdx);
+    }, i * 700);
+  });
+  setTimeout(mergeAndChoose, sounds.length * 700 + 400);
+}
+
+function mergeAndChoose() {
+  const merged = document.getElementById('decoderMerged');
+  if (!merged || merged.querySelector('.decoder-merged')) return;
+  merged.innerHTML = `<div class="decoder-merged">${decoderState.q.word}</div>`;
+  setTimeout(() => speak(decoderState.q.word, { rate: 0.7 }), 300);
+  // Show options after a moment
+  setTimeout(() => {
+    showDecoderOptions();
+  }, 1200);
+}
+
+function showDecoderOptions() {
+  const wrap = document.getElementById('decoderOptions');
+  if (!wrap) return;
+  wrap.style.display = 'block';
+  // Gather distractors from same difficulty pool
+  const allWords = Object.values(DECODE_DATA).flat();
+  const others = shuffle(allWords.filter(w => w.word !== decoderState.q.word)).slice(0, 3);
+  const opts = shuffle([
+    { emoji: decoderState.q.emoji, correct: true },
+    ...others.map(w => ({ emoji: w.emoji, correct: false }))
+  ]);
+  document.getElementById('decoderOptionsGrid').innerHTML = opts.map(o =>
+    `<button class="option-card" data-correct="${o.correct}" onclick="checkDecode(this)"><span class="option-emoji">${o.emoji}</span></button>`
+  ).join('');
+  // Help: hint at correct answer if too long
+  startHelpTimers(
+    () => showHelpBubble('Regarde bien les images !'),
+    () => {
+      const correctBtn = document.querySelector('.option-card[data-correct="true"]');
+      if (correctBtn) correctBtn.classList.add('stuck-hint');
+      showHelpBubble('Une image brille un peu...');
+    },
+    () => {
+      speak(decoderState.q.word + '. C\'est ' + decoderState.q.word + ' !');
+    }
+  );
+}
+
+function checkDecode(btn) {
+  clearHelpTimers();
+  const correct = btn.dataset.correct === 'true';
+  document.querySelectorAll('.option-card').forEach(b => b.style.pointerEvents = 'none');
+  if (correct) {
+    btn.classList.add('correct'); sndCorrect(); sparkleAt(btn);
+    speak(pick(succ)());
+    roundsCorrect++;
+    setTimeout(nextRound, 1100);
+  } else {
+    btn.classList.add('wrong'); sndWrong();
+    speak(pick(tryAgain)());
+    setTimeout(() => {
+      btn.classList.remove('wrong');
+      document.querySelectorAll('.option-card').forEach(b => b.style.pointerEvents = '');
+    }, 800);
+  }
+}
+
+/* ============================================================
+   MECHANIC 2: TRACÉ — trace letter with finger
+   ============================================================ */
+let traceState = { drawing: false, points: [], totalPath: 0, ctx: null, q: null, completed: false };
+
+function renderTrace(L) {
+  const q = questions[currentRound];
+  traceState = { drawing: false, points: [], totalPath: 0, ctx: null, q, completed: false };
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="game-header"><span class="small-char">${L.char}</span><h3>Trace la <span style="color:var(--gold-deep)">lettre</span></h3></div>
+    ${renderProgress()}
+    <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.2rem; color:var(--ink); margin-bottom:0.3rem;">Trace la lettre avec ton doigt</p>
+    <div class="trace-game">
+      <div class="trace-canvas-wrap">
+        <div class="trace-letter-bg">${q.letter}</div>
+        <canvas class="trace-canvas" id="traceCanvas" width="280" height="280"></canvas>
+      </div>
+      <div class="trace-progress-bar"><div class="trace-progress-fill" id="traceProgress"></div></div>
+      <div class="trace-buttons">
+        <button class="trace-btn" onclick="resetTrace()">↺ Recommencer</button>
+        <button class="trace-btn" onclick="speak('${q.sound}', {rate: 0.6})">🔊 Son</button>
+        <button class="trace-btn primary" onclick="validateTrace()">✓ Fini</button>
+      </div>
+    </div>
+  `;
+
+  // Setup canvas
+  const canvas = document.getElementById('traceCanvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 14;
+  ctx.strokeStyle = '#8b3d4f';
+  traceState.ctx = ctx;
+  traceState.canvasRect = () => canvas.getBoundingClientRect();
+
+  setupTraceEvents(canvas);
+  speak(`La lettre ${q.name}. ${q.sound}`, { rate: 0.7 });
+
+  // Help system
+  startHelpTimers(
+    () => { if (traceState.totalPath < 50) showHelpBubble('Trace par-dessus la lettre !'); },
+    () => { if (traceState.totalPath < 100) showHelpBubble('Avec ton doigt, suis le contour !'); },
+    () => { if (!traceState.completed) { autoCompleteTrace(); } }
+  );
+}
+
+function setupTraceEvents(canvas) {
+  const getPos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - r.left, y: t.clientY - r.top };
+  };
+  const start = (e) => {
+    if (e.cancelable) e.preventDefault();
+    traceState.drawing = true;
+    const p = getPos(e);
+    traceState.lastPoint = p;
+    traceState.ctx.beginPath();
+    traceState.ctx.moveTo(p.x, p.y);
+    sndPick();
+  };
+  const move = (e) => {
+    if (!traceState.drawing) return;
+    if (e.cancelable) e.preventDefault();
+    const p = getPos(e);
+    const dx = p.x - traceState.lastPoint.x;
+    const dy = p.y - traceState.lastPoint.y;
+    traceState.totalPath += Math.sqrt(dx*dx + dy*dy);
+    traceState.ctx.lineTo(p.x, p.y);
+    traceState.ctx.stroke();
+    traceState.lastPoint = p;
+    // Update progress bar (target: ~400 pixels of path = full)
+    const pct = Math.min(100, (traceState.totalPath / 400) * 100);
+    document.getElementById('traceProgress').style.width = pct + '%';
+    // Auto-validate at 100%
+    if (pct >= 100 && !traceState.completed) {
+      traceState.completed = true;
+      setTimeout(() => validateTrace(), 200);
+    }
+  };
+  const end = () => {
+    traceState.drawing = false;
+  };
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseleave', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', end);
+}
+
+function resetTrace() {
+  const canvas = document.getElementById('traceCanvas');
+  if (!canvas) return;
+  const ctx = traceState.ctx;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  traceState.totalPath = 0;
+  traceState.completed = false;
+  document.getElementById('traceProgress').style.width = '0%';
+  sndPick();
+}
+
+function validateTrace() {
+  clearHelpTimers();
+  if (traceState.totalPath < 80) {
+    showHelpBubble('Trace un peu plus !');
+    sndWrong();
+    return;
+  }
+  traceState.completed = true;
+  sndCorrect();
+  sparkleAt(document.querySelector('.trace-canvas-wrap'));
+  speak(`Bravo ! La lettre ${traceState.q.name}.`, { rate: 0.85 });
+  roundsCorrect++;
+  setTimeout(nextRound, 1500);
+}
+
+function autoCompleteTrace() {
+  // After timeout, accept whatever was drawn (always at least a little)
+  if (traceState.completed) return;
+  showHelpBubble('Allez, on continue !');
+  traceState.completed = true;
+  setTimeout(() => {
+    sndCorrect();
+    speak(`La lettre ${traceState.q.name} !`);
+    roundsCorrect++;
+    setTimeout(nextRound, 1300);
+  }, 1500);
+}
+
+/* ============================================================
+   MECHANIC 3: MICROPHONE — read aloud
+   ============================================================ */
+let micRecognition = null;
+let micState = { listening: false, attempts: 0 };
+
+function renderMic(L) {
+  const q = questions[currentRound];
+  micState = { listening: false, attempts: 0, q };
+
+  const supported = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="game-header"><span class="small-char">${L.char}</span><h3>Lis à <span style="color:var(--gold-deep)">haute voix</span></h3></div>
+    ${renderProgress()}
+    <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.2rem; color:var(--ink); margin-bottom:0.3rem;">Lis ce mot à voix haute, je t'écoute !</p>
+    <div class="mic-game">
+      <span style="font-size:3rem; display:block; margin: 0.3rem 0;">${q.emoji}</span>
+      <div class="mic-word-display" id="micWord">
+        ${q.word.split('').map(c => `<span class="mic-letter">${c}</span>`).join('')}
+      </div>
+      ${supported ? `
+        <button class="mic-button" id="micButton" onclick="toggleMic()">🎤</button>
+        <div class="mic-status" id="micStatus">Touche le micro et lis !</div>
+      ` : `
+        <p style="color:var(--rose-dark); font-family:'Caveat',cursive; font-size:1.2rem; padding:1rem;">Le microphone ne marche pas ici. On valide quand tu as lu !</p>
+        <button class="check-btn" onclick="micManualValidate()">J'ai lu !</button>
+      `}
+      <button class="mic-skip-btn" onclick="micSkip()">Passer ce mot</button>
+    </div>
+  `;
+
+  // Help: after 8s, suggest skip; after 15s, auto-skip
+  startHelpTimers(
+    () => showHelpBubble('Touche le micro 🎤 et lis le mot !'),
+    () => showHelpBubble('Tu peux passer si tu veux !'),
+    () => { showHelpBubble('On continue !'); micSkip(); }
+  );
+}
+
+function toggleMic() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return;
+
+  if (micState.listening) {
+    if (micRecognition) micRecognition.stop();
+    return;
+  }
+
+  micRecognition = new SpeechRecognition();
+  micRecognition.lang = 'fr-FR';
+  micRecognition.continuous = false;
+  micRecognition.interimResults = false;
+  micRecognition.maxAlternatives = 5;
+
+  micRecognition.onstart = () => {
+    micState.listening = true;
+    document.getElementById('micButton').classList.add('listening');
+    document.getElementById('micStatus').textContent = 'Je t\'écoute... 👂';
+  };
+
+  micRecognition.onresult = (event) => {
+    const results = [];
+    for (let i = 0; i < event.results[0].length; i++) {
+      results.push(event.results[0][i].transcript.toLowerCase().trim());
+    }
+    micCheckResult(results);
+  };
+
+  micRecognition.onerror = (e) => {
+    document.getElementById('micStatus').textContent = 'Hmmm, je n\'ai pas entendu...';
+    if (document.getElementById('micButton')) document.getElementById('micButton').classList.remove('listening');
+    micState.listening = false;
+  };
+
+  micRecognition.onend = () => {
+    micState.listening = false;
+    if (document.getElementById('micButton')) document.getElementById('micButton').classList.remove('listening');
+  };
+
+  try {
+    micRecognition.start();
+  } catch (e) {
+    document.getElementById('micStatus').textContent = 'Touche encore le micro !';
+  }
+}
+
+function micCheckResult(results) {
+  const target = micState.q.word.toLowerCase();
+  const accepted = (micState.q.accept || []).map(s => s.toLowerCase());
+  const matched = results.some(r => {
+    if (r === target) return true;
+    if (accepted.some(a => r === a || r.includes(a) || a.includes(r))) return true;
+    // Fuzzy: contains target word
+    if (r.includes(target)) return true;
+    return false;
+  });
+
+  const status = document.getElementById('micStatus');
+  if (matched) {
+    clearHelpTimers();
+    status.textContent = `Tu as dit : "${results[0]}" ✨`;
+    sndCorrect();
+    sparkleAt(document.getElementById('micWord'));
+    // Animate letters
+    document.querySelectorAll('.mic-letter').forEach((el, i) => {
+      setTimeout(() => el.classList.add('read'), i * 100);
+    });
+    setTimeout(() => speak(pick(succ)()), 600);
+    roundsCorrect++;
+    setTimeout(nextRound, 2000);
+  } else {
+    micState.attempts++;
+    status.textContent = `Tu as dit : "${results[0]}". Encore une fois ?`;
+    sndWrong();
+    if (micState.attempts >= 3) {
+      showHelpBubble('Tu peux passer si c\'est dur !');
+    }
+  }
+}
+
+function micManualValidate() {
+  clearHelpTimers();
+  sndCorrect();
+  speak(pick(succ)());
+  document.querySelectorAll('.mic-letter').forEach((el, i) => {
+    setTimeout(() => el.classList.add('read'), i * 80);
+  });
+  roundsCorrect++;
+  setTimeout(nextRound, 1500);
+}
+
+function micSkip() {
+  clearHelpTimers();
+  if (micRecognition && micState.listening) micRecognition.stop();
+  // Skip without counting as correct
+  speak(`C'est ${micState.q.word.toLowerCase()}.`, { rate: 0.6 });
+  setTimeout(nextRound, 1200);
+}
+
+/* ============================================================
+   MECHANIC 4: HIDDEN LETTER
+   ============================================================ */
+function renderHidden(L) {
+  const q = questions[currentRound];
+  const wordDisplay = q.word.split('').map((c, i) =>
+    i === q.hideIdx ? `<span class="hidden-blank">_</span>` : c
+  ).join('');
+  const opts = shuffle(q.options).map(o => ({letter: o, correct: o === q.word[q.hideIdx]}));
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="game-header"><span class="small-char">${L.char}</span><h3>La <span style="color:var(--gold-deep)">lettre</span> cachée</h3></div>
+    ${renderProgress()}
+    <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.15rem; color:var(--ink); margin-bottom:0.4rem;">Quelle lettre s'est cachée ?</p>
+    <div class="hidden-game">
+      <span class="hidden-image">${q.emoji}</span>
+      <div class="hidden-word">${wordDisplay}</div>
+      <div class="letter-options" id="letterOptions">
+        ${opts.map(o => `<button class="letter-option" data-letter="${o.letter}" data-correct="${o.correct}" onclick="checkHidden(this)">${o.letter}</button>`).join('')}
+      </div>
+    </div>
+  `;
+
+  // Help: after 7s subtle, after 12s glow correct, after 18s say it
+  startHelpTimers(
+    () => showHelpBubble('Regarde l\'image et le mot !'),
+    () => {
+      const correctBtn = document.querySelector('.letter-option[data-correct="true"]');
+      if (correctBtn) correctBtn.classList.add('stuck-hint');
+    },
+    () => {
+      const correctLetter = q.word[q.hideIdx];
+      speak(`C'est la lettre ${correctLetter}`, { rate: 0.6 });
+      showHelpBubble(`C'est ${correctLetter} !`);
+    }
+  );
+}
+
+function checkHidden(btn) {
+  clearHelpTimers();
+  const correct = btn.dataset.correct === 'true';
+  document.querySelectorAll('.letter-option').forEach(b => b.style.pointerEvents = 'none');
+  if (correct) {
+    btn.classList.add('correct');
+    sndCorrect(); sparkleAt(btn);
+    speak(pick(succ)());
+    // Reveal full word
+    const blank = document.querySelector('.hidden-blank');
+    if (blank) blank.textContent = btn.dataset.letter;
+    roundsCorrect++;
+    setTimeout(nextRound, 1300);
+  } else {
+    btn.classList.add('wrong');
+    sndWrong();
+    speak(pick(tryAgain)());
+    setTimeout(() => {
+      btn.classList.remove('wrong');
+      document.querySelectorAll('.letter-option').forEach(b => b.style.pointerEvents = '');
+    }, 800);
+  }
+}
+
+/* ============================================================
+   MECHANIC 5: BUILD WORD (letter by letter, no audio first)
+   ============================================================ */
+let buildState = { typed: '', target: '', usedKeys: [], q: null };
+
+function renderBuild(L) {
+  const q = questions[currentRound];
+  buildState = { typed: '', target: q.word, usedKeys: [], q };
+
+  const targetLetters = q.word.split('');
+  const allFrenchLetters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','X','Y','Z'];
+  const distractors = shuffle(allFrenchLetters.filter(l => !targetLetters.includes(l))).slice(0, Math.max(4, 14 - targetLetters.length));
+  const allLetters = shuffle([...targetLetters, ...distractors]);
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="game-header"><span class="small-char">${L.char}</span><h3>Construis le <span style="color:var(--rose-dark)">mot</span></h3></div>
+    ${renderProgress()}
+    <p style="text-align:center; font-family:'Caveat',cursive; font-size:1.15rem; color:var(--ink-soft); margin-bottom:0.3rem;">${q.hint}</p>
+    <div class="build-game">
+      <span class="build-image">${q.emoji}</span>
+      <div class="build-display" id="buildDisplay"></div>
+      <div class="build-keyboard">
+        ${allLetters.map((l, i) => `<button class="build-key" data-letter="${l}" data-idx="${i}" onclick="buildType(this)">${l}</button>`).join('')}
+        <button class="build-key wide" onclick="buildErase()">⌫ Effacer</button>
+      </div>
+    </div>
+  `;
+  updateBuildDisplay();
+
+  // Help: after 8s show first cell, after 14s glow correct key, after 20s do it
+  startHelpTimers(
+    () => {
+      const idx = buildState.typed.length;
+      const cells = document.querySelectorAll('.build-cell');
+      if (cells[idx]) cells[idx].classList.add('hint-glow');
+      showHelpBubble('La lettre brille un peu...');
+    },
+    () => {
+      // Highlight the correct key
+      const idx = buildState.typed.length;
+      if (idx < buildState.target.length) {
+        const nextLetter = buildState.target[idx];
+        const keys = document.querySelectorAll('.build-key:not(.wide)');
+        const target = Array.from(keys).find(k => k.dataset.letter === nextLetter && k.style.opacity !== '0.3');
+        if (target) target.classList.add('hint');
+      }
+    },
+    () => {
+      // Auto-press correct letter
+      const idx = buildState.typed.length;
+      if (idx < buildState.target.length) {
+        const nextLetter = buildState.target[idx];
+        const keys = document.querySelectorAll('.build-key:not(.wide)');
+        const target = Array.from(keys).find(k => k.dataset.letter === nextLetter && k.style.opacity !== '0.3');
+        if (target) {
+          showHelpBubble('Je t\'aide !');
+          buildType(target);
+          // Restart help timers for next letter
+          startHelpTimers(
+            () => {
+              const i2 = buildState.typed.length;
+              const cells = document.querySelectorAll('.build-cell');
+              if (cells[i2]) cells[i2].classList.add('hint-glow');
+            },
+            () => {
+              const i2 = buildState.typed.length;
+              if (i2 < buildState.target.length) {
+                const nl = buildState.target[i2];
+                const ks = document.querySelectorAll('.build-key:not(.wide)');
+                const t = Array.from(ks).find(k => k.dataset.letter === nl && k.style.opacity !== '0.3');
+                if (t) t.classList.add('hint');
+              }
+            },
+            null
+          );
+        }
+      }
+    }
+  );
+}
+
+function updateBuildDisplay() {
+  const display = document.getElementById('buildDisplay');
+  if (!display) return;
+  let html = '';
+  for (let i = 0; i < buildState.target.length; i++) {
+    const c = i < buildState.typed.length ? buildState.typed[i] : '';
+    html += `<span class="build-cell ${c ? 'filled' : ''}">${c || '\u00a0'}</span>`;
+  }
+  display.innerHTML = html;
+}
+
+function buildType(btn) {
+  if (buildState.typed.length >= buildState.target.length) return;
+  // Restart help timers on every interaction
+  clearHelpTimers();
+  // Remove any hints
+  document.querySelectorAll('.build-key.hint').forEach(k => k.classList.remove('hint'));
+  document.querySelectorAll('.build-cell.hint-glow').forEach(c => c.classList.remove('hint-glow'));
+
+  const letter = btn.dataset.letter;
+  buildState.typed += letter;
+  buildState.usedKeys.push(btn.dataset.idx);
+  btn.style.opacity = '0.3'; btn.style.pointerEvents = 'none';
+  sndDrop();
+  updateBuildDisplay();
+
+  if (buildState.typed.length === buildState.target.length) {
+    setTimeout(() => {
+      const norm = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+      if (norm(buildState.typed) === norm(buildState.target)) {
+        sndCorrect();
+        speak(pick(succ)() + ' ' + buildState.target.toLowerCase());
+        const display = document.getElementById('buildDisplay');
+        if (display) {
+          display.style.background = '#c5e0b3';
+          display.style.borderColor = '#4a6b3a';
+          sparkleAt(display);
+        }
+        roundsCorrect++;
+        setTimeout(nextRound, 1500);
+      } else {
+        sndWrong();
+        speak(pick(tryAgain)());
+        const display = document.getElementById('buildDisplay');
+        if (display) {
+          display.style.background = '#f5c6c6';
+          display.style.borderColor = '#a83d3d';
+        }
+        setTimeout(() => {
+          if (display) {
+            display.style.background = '';
+            display.style.borderColor = '';
+          }
+          buildState.typed = '';
+          buildState.usedKeys = [];
+          document.querySelectorAll('.build-key').forEach(k => {
+            if (!k.classList.contains('wide')) {
+              k.style.opacity = '';
+              k.style.pointerEvents = '';
+            }
+          });
+          updateBuildDisplay();
+          // Restart help
+          startHelpTimers(null, null, null);
+        }, 1100);
+      }
+    }, 250);
+  } else {
+    // Restart help for next letter
+    startHelpTimers(
+      () => {
+        const i2 = buildState.typed.length;
+        const cells = document.querySelectorAll('.build-cell');
+        if (cells[i2]) cells[i2].classList.add('hint-glow');
+      },
+      () => {
+        const i2 = buildState.typed.length;
+        if (i2 < buildState.target.length) {
+          const nl = buildState.target[i2];
+          const ks = document.querySelectorAll('.build-key:not(.wide)');
+          const t = Array.from(ks).find(k => k.dataset.letter === nl && k.style.opacity !== '0.3');
+          if (t) t.classList.add('hint');
+        }
+      },
+      null
+    );
+  }
+}
+
+function buildErase() {
+  if (buildState.typed.length === 0) return;
+  buildState.typed = buildState.typed.slice(0, -1);
+  const lastIdx = buildState.usedKeys.pop();
+  if (lastIdx !== undefined) {
+    const k = document.querySelector(`.build-key[data-idx="${lastIdx}"]`);
+    if (k) { k.style.opacity = ''; k.style.pointerEvents = ''; }
+  }
+  sndPick();
+  updateBuildDisplay();
+}
+
+/* ====================== ROUND TRANSITIONS ====================== */
+function nextRound() {
+  currentRound++;
+  addStar(1);
+  if (currentRound >= totalRounds) renderEndStage();
+  else startRound();
+}
+
+function renderEndStage() {
+  confetti();
+  sndWin();
+  // Save completion
+  if (!completedStages.includes(currentLevelId)) {
+    completedStages.push(currentLevelId);
+    localStorage.setItem('completedStagesLecture', JSON.stringify(completedStages));
+  }
+  setTimeout(() => speak(pick(finishLine)(princessName)), 400);
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="end-screen">
+      <div class="reward-icon">🌟</div>
+      <h4>Bravo !</h4>
+      <p>${roundsCorrect} bonnes réponses sur ${totalRounds}</p>
+      <button class="royal-btn" onclick="closeModal()">Continuer le voyage 🗺️</button>
+    </div>
+  `;
+}
+
+/* ====================== GIFT BOX ====================== */
+function openGift(id) {
+  const G = PATH.find(p => p.id === id);
+  if (!G || G.type !== 'gift') return;
+  const alreadyOpened = openedGifts.includes(id);
+  document.getElementById('modal').classList.add('active');
+  document.getElementById('modalContent').innerHTML = `
+    <div class="gift-modal">
+      <h3 style="font-family:'Cinzel',serif; font-weight:900; color:var(--rose-dark); margin-bottom:0.3rem;">${alreadyOpened ? 'Tu as déjà ouvert' : 'Une boîte cadeau !'}</h3>
+      <p style="font-family:'Caveat',cursive; font-size:1.3rem; color:var(--swamp-deep); margin-bottom:0.6rem;">${alreadyOpened ? 'ce cadeau magique 🎁' : 'Touche pour l\'ouvrir !'}</p>
+      ${alreadyOpened ? `
+        <div style="text-align:center;">
+          <span class="reward-emoji-big">${G.reward.emoji}</span>
+          <div class="reward-name">${G.reward.name}</div>
+          <div class="reward-desc">${G.reward.desc}</div>
+          <button class="royal-btn" onclick="closeModal()">Continuer 🗺️</button>
+        </div>
+      ` : `
+        <div class="gift-box-wrap" id="giftWrap" onclick="unwrapGift('${id}')">
+          <div class="gift-bow">🎀</div>
+          <div class="gift-box" id="giftBox">
+            <div class="gift-body"></div>
+          </div>
+        </div>
+        <div class="gift-reveal" id="giftReveal">
+          <span class="reward-emoji-big">${G.reward.emoji}</span>
+          <div class="reward-name">${G.reward.name}</div>
+          <div class="reward-desc">${G.reward.desc}</div>
+          <button class="royal-btn" id="giftContinueBtn" style="display:none" onclick="closeModal()">Continuer 🗺️</button>
+        </div>
+      `}
+    </div>
+  `;
+  if (!alreadyOpened) speak('Une boîte cadeau ! Touche-la !');
+  else speak('Voilà ton cadeau !');
+}
+
+function unwrapGift(id) {
+  const G = PATH.find(p => p.id === id);
+  if (!G) return;
+  if (openedGifts.includes(id)) return;
+
+  // Animate
+  const box = document.getElementById('giftBox');
+  const wrap = document.getElementById('giftWrap');
+  const reveal = document.getElementById('giftReveal');
+  const continueBtn = document.getElementById('giftContinueBtn');
+
+  box.classList.add('opened');
+  sndGift();
+  confetti(80);
+
+  setTimeout(() => {
+    wrap.style.display = 'none';
+    reveal.classList.add('show');
+    continueBtn.style.display = 'inline-block';
+    speak(`Wahou ! ${G.reward.name} ! ${G.reward.desc}`);
+  }, 700);
+
+  // Save
+  openedGifts.push(id);
+  collection.push(G.reward);
+  localStorage.setItem('openedGiftsLecture', JSON.stringify(openedGifts));
+  localStorage.setItem('collectionLecture', JSON.stringify(collection));
+  updateHUD();
+
+  // Check final victory
+  setTimeout(() => {
+    const allDone = PATH.filter(p => p.type === 'stage').every(p => completedStages.includes(p.id))
+                  && PATH.filter(p => p.type === 'gift').every(p => openedGifts.includes(p.id));
+    if (allDone) setTimeout(triggerVictory, 1800);
+  }, 1500);
+}
+
+/* ====================== VICTORY ====================== */
+function triggerVictory() {
+  closeModal();
+  document.getElementById('victory').classList.add('show');
+  for (let i = 0; i < 5; i++) setTimeout(() => confetti(60), i * 600);
+  setTimeout(() => speak(`Bravo ${princessName} ! Tu es la reine !`), 800);
+}
+function restartAll() {
+  completedStages = [];
+  openedGifts = [];
+  collection = [];
+  localStorage.setItem('completedStagesLecture', '[]');
+  localStorage.setItem('openedGiftsLecture', '[]');
+  localStorage.setItem('collectionLecture', '[]');
+  document.getElementById('victory').classList.remove('show');
+  updateHUD();
+  renderJourney();
+}
+
+/* ====================== RESET ====================== */
+function confirmReset() {
+  if (confirm('Tout recommencer ? Tu perdras tout !')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+/* ====================== INIT ====================== */
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') closeModal();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('touchstart', () => getAudio()?.resume(), { once: true });
+document.addEventListener('click', () => getAudio()?.resume(), { once: true });
+
+const savedName = localStorage.getItem('princessName');
+if (savedName) document.getElementById('nameInput').value = savedName;
+</script>
+
+</body>
+</html>
